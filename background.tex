@@ -1,0 +1,449 @@
+\section{Preliminaries}
+\label{s:prelim}
+In this section we introduce some notation, our cryptographic assumptions and the communication and adversarial model for the distributed protocols in this paper.
+Then, we give background on TSS, polynomial commitments, VSS, DKG and polynomial multipoint evaluations.
+
+\subsubsection{Notation}
+\label{s:prelim:notation}
+Let $\Fp$ denote the finite field ``in the exponent'' associated with a group $\Group$ of prime order $p$ with generator $g$.
+We use multiplicative notation for all algebraic groups in this paper.
+Let $1_{\Group}$ denote the identity element of a group $\Group$.
+Let $s \in_R S$ denote sampling an element $s$ uniformly at random from some set $S$.
+Let $\log{x}$ be shorthand for $\log_2{x}$.
+Let $[i,j] = \{i,i+1,\dots,j-1,j\}$ and $[n] = [1,n]$ and.
+Let $\deg{\phi}$ denote the degree of a polynomial $\phi$.
+We say a polynomial $\phi$ has \textit{degree-bound} $m$ if $\deg{\phi} < m$.
+Let $\PP_q(g;\tau) = \langle g^\tau, g^{\tau^2}, \dots, g^{\tau^q}\rangle$ denote public parameters used in the $q$-SBDH assumption (see \cref{s:assumptions}).
+
+\subsubsection{Cryptographic assumptions}
+\label{s:prelim:cryptographic-assumptions}
+Our work relies on the use of \emph{pairings} or \emph{bilinear maps}, first introduced by Menezes et al. \cite{mov-attack}.
+Recall that a bilinear map $e(\cdot,\cdot) : \Group \times \Group \rightarrow \Group_T$ has useful algebraic properties: $e(g^a, g^b) = e(g^a, g)^b = e(g, g^b)^a = e(g, g)^{ab}$.
+To simplify exposition, throughout the paper we assume symmetric (Type~I) pairings, but our results can be re-stated in the setting of the more efficient asymmetric (Type II and III) pairings in a straightforward manner.
+Our schemes from \cref{s:scalable-vss,s:scalable-dkg} rely on the $q$-SBDH~\cite{qsbdh} and $q$-polyDH~\cite{polycommit} assumptions, both defined in \cref{s:assumptions}.
+
+\subsubsection{Communication and adversarial model}
+DKG and VSS protocols assume a \textit{broadcast channel} for all actors to reliably communicate with each other~\cite{CGMA85,Pedersen1991AThreshold}.
+(In practice, this can be implemented using BFT protocols~\cite{SJSW19}.)
+In addition, some protocols need \textit{private and authenticated channels} between actors~\cite{Feldman1987Practical,Pedersen1991AThreshold,polycommit,dkg,Kate2010Distributed}.
+We focus on \textit{synchronous} VSS and DKG protocols, where parties communicate in \textit{rounds}.
+Within a round, each party performs some computation, (possibly) sends private messages to other players and broadcasts a message to everybody.
+By the end of the round, each party receives all messages sent in that round by other players (whether privately or via broadcast).
+We assume computationally-bounded adversaries \Adv that control up to $t-1$ players.
+%In other words, we only focus on \textit{computationally-secure} VSS and DKG protocols, since \textit{unconditional security} is inherently costlier and more difficult to scale.
+We restrict ourselves to \textit{static} \Adv's who fix the set of $<t$ corrupted players before the protocol starts.
+% Note: FGG+06 is one VSS paper that talks about rushing adversaries.
+We assume \Adv can be \textit{rushing} and can wait to hear all messages from all honest players in a round before privately sending or broadcasting his own message within that same round.
+% Note: Why you do NOT need an honest majority to disqualify dishonest players in a DKG protocol:
+%  - if t-1 players say player i is bad, then they could all be malicious, so you can't disqualify i
+%  - it t   players say player i is bad, then one of the players must have been honest, so I we can safely disqualify player i.
+The protocols in this paper are \textit{robust}: there are always $t$ honest players who can reconstruct the secret.
+In the synchronous setting, robustness holds for all $t - 1 < n/2$~\cite{dkg}.
+%To see this, note the minimum number of honest players is $h = n - (t-1)$, since an adversary can compromise up to $t-1$ players.
+%Since $t$ honest are needed to reconstruct, this is the same thing as saying $h \ge t\Leftrightarrow h > t-1 \Leftrightarrow n-(t-1) > t-1 \Leftrightarrow n > 2t-2 \Leftrightarrow n/2 > t-1$.
+
+\subsubsection{FFT and Lagrange interpolation}
+\label{s:prelim:fft}
+% moderncomputeralgebra-ch8 talks about FFT in finite field (roots of unity to coefficients)
+% moderncomputeralgebra-ch9 talks about fast division using Newton iteration
+% moderncomputeralgebra-ch10 talks about evaluation and interpolation using FFT at arbitrary points: x_i, f(x_i)
+% moderncomputeralgebra-ch11 talks about fast Euclidean Algorithm (Theorem 11.10)
+We use the \textit{Fast Fourier Transform (FFT)} to multiply and divide polynomials in $\Fp[X]$ of degree-bound $N = 2^k$ in $\Theta(N\log{N})$ time~\cite{CLRS09,moderncomputeralgebra-ch9}.
+For this, we need a primitive $N$th \textit{root of unity} in $\Fp$, which we denote by $\omega_N$~\cite{CLRS09}.
+% Recall that an FFT of size $N$ on a polynomial $\phi=(c_0, c_1, c_2, \dots, c_n)$ of degree $n<N$ computes $(\phi(\omega^i))_{i\in[0,n-1]}$ in $\Theta(n\log{n})$ field operations.
+%
+% Aho, Ullman "The Design and Analysis of Computer Algorithms" book says in Section 8.3 "Polynomial multiplication and divison", Theorem 8.7 that multiplication and division of any polynomial of degree n take the same time.
+%
+% Preparata paper: Remark at the end states that convolutions of any size can be computed. In other words, polynomials of any degree can be multiplied.
+%
+% Note: In our implementation, we never need to use FFT-based division: 
+% (1) Our AMT-based protocols only divide by (x^{2^i} + \omega_n^k) polynomials, which can be done in O(2^i) time
+% (2) Our BLS TSS uses an FFT rather than a multipoint eval to evaluate the N'(x) derivative at all roots-of-unity, discarding unnecessary values
+% However, in the paper, many algorithms require fast division (e.g., multipoint eval, fast Lagrange, KZG batch proofs), so we must mention it is doable in n\log{n} time.
+Finally, given $(x_i, y_i = \phi(x_i))_{i\in[n]}$, interpolating $\phi$ takes $\Theta(n\log^2{n})$ time using \textit{fast Lagrange interpolation}~\cite{moderncomputeralgebra-ch10}.
+Specifically, recall that $\phi(x)=\sum_{i\in[n]} \Ell_i^{[n]}(x) y_i$ where $\Ell_i^{[n]}(x)=\prod_{{j\in[n]\\j\ne i}} \frac{x-x_j}{x_i-x_j}$ is called a \textit{Lagrange polynomial}~\cite{BT04}.
+Note that $\Ell_i^{[n]}$ is defined with respect to the set of points $\{x_i\}_{i\in[n]}$.
+Throughout this paper, this set will typically be $\{x_i\}_{i\in T}$ where $T\subset [n]$, with either $x_i = i$ or $x_i = \omega_N^{i-1}$ and the Lagrange polynomial will be denoted $\Ell_i^T(x)$.
+
+
+%\newcommand{\showdiv}[2]{\makecell*[{{p{5cm}}}]{#1\\#2}}
+%\newcommand{\showdiv}[2]{\makecell{#1\\#2}}
+%\newcommand{\showdiv}[2]{\makecell{#1\\*#2}}
+%\newcommand{\showdiv}[2]{\makecell{#1\linebreak#2}}
+%\newcommand{\showdiv}[2]{\makecell{#1\newline#2}}
+\newcommand{\showdiv}[2]{#2}
+%\newcommand{\showdiv}[2]{#1}
+\newcommand{\quoNode}[1]{\myred{#1}}
+\newcommand{\leafRem}[1]{\myblue{\mathbf{#1}}}
+
+\newcommand{\multipointEvalFigure}{
+\begin{figure*}[t]
+{
+\scriptsize
+%\small
+\begin{forest}
+for tree={
+%    fit=band,% spaces the tree out a little to avoid collisions
+%    fit=tight,% spaces the tree out less
+%    fit=rectangle,
+    inner sep=4,
+}
+[{\showdiv{$r_{1,8} = \phi \bmod (x-1)(x-2)\dots(x-8)$}{$\phi = \quoNode{q_{1,8}} (x-1)(x-2)\dots(x-8) + r_{1,8}$}}
+    [{\showdiv{$r_{1,4} = r_{1,8} \bmod (x-1)(x-2)\dots(x-4)$}{$r_{1,8} = \quoNode{q_{1,4}} (x-1)(x-2)\dots(x-4) + r_{1,4}$}}
+        [{\showdiv{$r_{1,2} = r_{1,4} \bmod (x-1)(x-2)$}{$r_{1,4} = \quoNode{q_{1,2}} (x-1)(x-2) + r_{1,2}$}}
+            [{\showdiv{$r_{1,1} = r_{1,2} \bmod (x-1)$}{$r_{1,2} = \quoNode{q_{1,1}} (x-1) + \leafRem{r_{1,1}}$}}
+                [, no edge, tier=odd ]
+            ]
+            [{\showdiv{$r_{2,2} = r_{1,2} \bmod (x-2)$}{$r_{1,2} = \quoNode{q_{2,2}} (x-2) + \leafRem{r_{2,2}}$}}, tier=odd
+            ]
+        ]
+        [{\showdiv{$r_{3,4} = r_{1,4} \bmod (x-3)(x-4)$}{$r_{1,4} = \quoNode{q_{3,4}}(x-3)(x-4) + r_{3,4}$}}
+            [{\showdiv{$r_{3,3} = r_{3,4} \bmod (x-3)$}{$r_{3,4} = \quoNode{q_{3,3}}(x-3) + \leafRem{r_{3,3}}$}}
+                [, no edge, tier=odd ]
+            ]
+            [{\showdiv{$r_{4,4} = r_{3,4} \bmod (x-4)$}{$r_{3,4} = \quoNode{q_{4,4}}(x-4) + \leafRem{r_{4,4}}$}}, tier=odd
+            ]
+        ]
+    ]
+    [{\showdiv{$r_{5,8} = r_{1,8} \bmod (x-5)(x-6)\dots(x-8)$}{$r_{1,8} = \quoNode{q_{5,8}} (x-5)(x-6)\dots(x-8) + r_{5,8}$}} 
+        [{\showdiv{$r_{5,6} = r_{5,8} \bmod (x-5)(x-6)$}{$r_{5,8} = \quoNode{q_{5,6}}(x-5)(x-6) + r_{5,6}$}} 
+            [{\showdiv{$r_{5,5} = r_{5,6} \bmod (x-5)$}{$r_{5,6} = \quoNode{q_{5,5}}(x-5) + \leafRem{r_{5,5}}$}}
+                [, no edge, tier=odd ]
+            ]
+            [{\showdiv{$r_{6,6} = r_{5,6} \bmod (x-6)$}{$r_{5,6} = \quoNode{q_{6,6}}(x-6) + \leafRem{r_{6,6}}$}}, tier=odd
+            ]
+        ]
+        [{\showdiv{$r_{7,8} = r_{5,8} \bmod (x-7)(x-8)$}{$r_{5,8} = \quoNode{q_{7,8}}(x-7)(x-8) + r_{7,8}$}} 
+            [{\showdiv{$r_{7,7} = r_{7,8} \bmod (x-7)$}{$r_{7,8} = \quoNode{q_{7,7}}(x-7)+\leafRem{r_{7,7}}$}}
+                [, no edge, tier=odd ]
+            ]
+            [{\showdiv{$r_{8,8} = r_{7,8} \bmod (x-8)$}{$r_{7,8} = \quoNode{q_{8,8}}(x-8)+\leafRem{r_{8,8}}$}}, tier=odd
+            ]
+        ]
+    ]
+]
+\end{forest}
+}
+
+\caption{A multipoint evaluation of polynomial $\phi$ at points $[8]=\{1,2,\dots, 8\}$.
+    Each node is expressed as $a = q \cdot b + r$: i.e., a polynomial $a$ is being divided by $b$, resulting in a \textit{quotient} $q$ and a \textit{remainder} $r$.
+    In the root node, $\phi$ is divided by the root \textit{accumulator} $\prod_{i\in[8]}(x-i)$, obtaining a quotient $q_{1,8}$ and a remainder $r_{1,8}$.
+    Then, the root's left child divides $r_{1,8}$ by $(x-1)\cdots(x-4)$ while the right child divides it by $(x-5)\cdots(x-8)$.
+    The process is repeated recursively on the resulting $r_{1,4}$ and $r_{5,8}$ remainders.
+    The remainders $r_{i,i}$ in the leaves are the evaluations $\phi(i)$.}
+\label{f:multipoint-eval}
+\end{figure*}
+}
+
+\subsection{Threshold Signature Schemes (TSS)}
+\label{s:prelim:threshsig}
+
+A $(t,n)$-threshold signature scheme (TSS) is a protocol amongst $n$ \textit{signers} where \textit{only} subsets of size $\ge t$ can produce a \textit{digital signature}~\cite{rsa} on a message $m$.
+Many signature schemes can be turned into a TSS, such as RSA~\cite{rsa,Shoup2000Practical}, Schnorr~\cite{Schnorr89,threshold-schnorr,Gennaro2003SecureApplications}, ElGamal~\cite{ElGamal1985APublicKey,Harn1994GroupOriented,Park96NewElGamal,Gennaro1996Robust}, ECDSA~\cite{GennaroGoldfederNarayanan2016ThresholdOptimal} and BLS~\cite{bls,Boldyreva2003Threshold}.
+In this paper, we focus on the BLS TSS because of its simplicity and efficiency.
+
+\subsubsection{(Threshold) BLS signatures}
+A normal BLS signature on a message $m\in \{0,1\}^*$ is $\sigma = H(m)^s$ where $s\in_R \Fp$ is the \textit{secret key} and $H : \{0,1\}^* \rightarrow \Group$ is a hash function modeled as a random oracle.
+To verify the signature against the \textit{public key} $g^s$, a bilinear map $e$ is used to ensure that $e(H(m), g^s) \stackrel{?}{=} e(\sigma, g)\Leftrightarrow e(H(m),g)^s \stackrel{?}{=} e(H(m)^s, g)$.
+
+To obtain a $(t,n)$ BLS TSS~\cite{Boldyreva2003Threshold}, the secret key $s$ is split amongst the $n$ signers using $(t,n)$ Shamir secret sharing (see \cref{s:prelim:shamir-secret-sharing}).
+Specifically, each signer $i$ has a \textit{secret key share} $s_i$ of $s$ along with a \textit{verification key} $g^{s_i}$.
+%Reconstructing $s$ directly and then using it to sign $m$ would only result in a one-time threshold signature scheme, since once $s$ is revealed to a signer, the scheme is no longer a threshold scheme.
+To produce a signature on $m$, each $i$ computes a \textit{signature share} $\sigma_i = H(m)^{s_i}$.
+Then, all $\sigma_i$'s are sent to an \textit{aggregator} (e.g., one of the signers).
+Since some signers are malicious, their $\sigma_i$ might not be valid.
+Thus, the aggregator verifies each $\sigma_i$ by checking if $e(g^{s_i}, H(m)) \stackrel{?}{=} e(\sigma_i, g)$.
+(This works because $\sigma_i$ is a normal BLS signature that should verify under $g^{s_i}$.)
+This way, the aggregator finds a subset $T$ of $t$ signers who produced a valid signature share $\sigma_i$.
+Now, the aggregator can compute the final signature as $\sigma = \prod_{i\in T} {\sigma_i^{\Ell_i^T(0)}} = H(m)^{\sum_{i\in T} {s_i \Ell_i^T(0)}} = H(m)^s$ via Lagrange interpolation (see \cref{s:prelim:fft}).
+Importantly, aggregation never exposes the secret key $s$, which is interpolated ``in the exponent.''
+The time to \textit{aggregate} the signature is $\Theta(t^2)$, dominated by the time to (naively) compute the $\Ell_i^T(0)$'s.
+
+\subsection{Constant-sized Polynomial Commitments}
+\label{s:prelim:polycommit}
+Kate, Zaverucha and Goldberg introduced constant-sized polynomial commitments, often called \textit{KZG commitments}~\cite{polycommit}.
+Their scheme requires $\ell$-SDH~\cite{BonehBoyen2008} public parameters $\PP_\ell(g;\tau)=(g^{\tau^i})_{i\in[0,\ell]}$ where $\tau$ denotes a trapdoor.
+(These parameters are computed via a \textit{trusted setup}; see \cref{s:trusted-setup}.)
+Their scheme is \textit{computationally-hiding} (see \cref{d:polycommit:comp-hiding}) under the discrete log assumption and \textit{computationally-binding}~\cite{polycommit} under $\ell$-SDH.
+Unlike Pedersen commitments~\cite{Pedersen1991Noninteractive}, KZG can only commit to polynomials of maximum degree $\ell$.
+
+Let $\phi$ denote a polynomial of degree $d\le \ell$ with coefficients $c_0, c_1, \dots, c_d$ in $\Fp$.
+A KZG commitment to $\phi$ is a single group element $C = \prod_{i=0}^d {\left(g^{\tau^i}\right)^{c_i}} = g^{\sum_{i=0}^d c_i \tau^i} = g^{\phi(\tau)}$.
+Note that committing to $\phi$ takes $\Theta(d)$ time.
+To compute an \textit{evaluation proof} that $\phi(a) = y$, KZG leverages the polynomial remainder theorem, which says:
+\begin{align}
+    \phi(a) = y \Leftrightarrow \exists q, \phi(x) - y = q(x)(x-a)
+    \label{eq:poly-rem-thm}
+\end{align}
+The proof is just a KZG commitment to $q$: a single group element $\pi=g^{q(\tau)}$.
+Computing the proof takes $\Theta(d)$ time.
+To verify $\pi$, one checks (in constant time) if 
+$e(C / g^y, g) = e(g^{\pi}, g^{\tau}/g^a)\Leftrightarrow e(g,g)^{\phi(\tau)-y} = e(g,g)^{q(\tau)(\tau-a)}$.
+%\begin{align*}
+%e(C / g^y, g)            &\stackrel{?}{=} e(g^{\pi}, g^{\tau}/g^a) \Leftrightarrow\\
+%e(g^{\phi(\tau) - y}, g) &\stackrel{?}{=} e(g^{q(\tau)},g^{\tau-a})\Leftrightarrow\\
+%e(g,g)^{\phi(\tau)-y}    &\stackrel{?}{=} e(g,g)^{q(\tau)(\tau-a)} \Leftrightarrow\\
+%{\phi(\tau)-y}           &\stackrel{?}{=} q(\tau)(\tau-a)
+%\end{align*}
+
+\subsubsection{Batch proofs and homomorphism}
+\label{s:prelim:polycommit:kzg:batch}
+\label{s:prelim:polycommit:kzg:homomorphism}
+Given a set of points $S$ and their evaluations $\{\phi(i)\}_{i\in S}$, KZG can prove all evaluations with \textit{one} constant-sized \textit{batch proof} rather than $|S|$ individual proofs~\cite{polycommit}.
+The prover computes an \textit{accumulator polynomial} $a(x)=\prod_{i\in S} (x-i)$ in $\Theta(|S|\log^2{|S|})$ time and computes $\phi/a$ in $\Theta(d\log{d})$ time, obtaining a quotient $q$ and remainder $r$.
+The batch proof is $\pi=g^{q(\tau)}$.
+To verify $\pi$ against $\{\phi(i)\}_{i\in S}$ and $C$, the verifier first computes $a$ from $S$ and interpolates $r$ such that $r(i)=\phi(i), \forall i \in S$ in $\Theta(|S|\log^2{|S|})$ time.
+Next, he computes $g^{a(\tau)}$ and $g^{r(\tau)}$ commitments.
+Finally, he checks if $e(C / g^{r(\tau)}, g) = e(g^{q(\tau)}, g^{a(\tau)})$.
+We stress that batch proofs are only useful when $|S| \le d$.
+Otherwise, if $|S| > d$, we can interpolate $\phi$ directly from the evaluations, which makes verifying any evaluation trivial.
+
+Finally, KZG proofs have a \textit{homomorphic} property.
+Suppose we have two polynomials $\phi_1, \phi_2$ with commitments $C_1,C_2$ and two proofs $\pi_1,\pi_2$ for $\phi_1(a)$ and $\phi_2(a)$, respectively.
+Then, a commitment $C$ to the sum polynomial $\phi=\phi_1 + \phi_2$ can be computed as $C=C_1 C_2=g^{\phi_1(\tau)} g^{\phi_2(\tau)} = g^{\phi_1(\tau) + {\phi_2(\tau)}} = g^{(\phi_1 +\phi_2)(\tau)}$.
+Even better, a proof $\pi$ for $\phi(a)$ w.r.t. $C$ can be aggregated as $\pi = \pi_1 \pi_2$.
+This homomorphism is necessary in KZG-based protocols such as \ejfdkg (see \cref{s:prelim:dkg}).
+
+% Note: "hiding" for degree t polynomial \phi() is defined as:
+% - Adversary gets t evaluations \phi(x_i) \textbf{and} proofs \pi_i, i\in[t] and has to guess \phi(x*) for any x* != x_i.
+% Unconditional hiding means no information about \phi(x*) can be determined by adversary.
+% Computational hiding means no PPT adversary can output \phi(x*).
+%
+% PolyCommit_DL is NOT information-theoretic hiding because g^{\phi(\tau)} is exposed, so information about $\phi(x*)$ at $x* = \tau$ is revealed.
+%
+%
+% Q: An interesting question is if, given t \phi(x_i)'s, can we interpolate g^{\phi(x*)} in the exponent?
+% A: I would need to compute Lagrange coefficients \ell_i = \Ell_i^T(x*) = \prod_{j\in [0,t],  j\ne i} (x* - x_j)/(x_i - x_j) where {x_k}_{k \in [t]} are the extra t points and x_0 = \tau
+% But I cannot do this when I don't know \tau, because the denominator needs to have \prod_{j\in[t]}(\tau - x_j).
+% Really, I need to just compute $\ell_0$ (to exponentiate g^{\phi(\tau)} with) and then I only need {g^{\ell_i}}_{i\in[t]} (to exponentiate them with \phi(x_i)).
+%   - but I can't compute \ell_0 because its denominator is \prod_{j\in[1,t]} (\tau - x_j)
+%   - and I can't compute \ell_i with i \ne 0 because it has an (x* - \tau) in the numerator
+%
+% What if I interpolate at a particular x* rather than an arbitrary one?
+% I need an x* that makes computing the \ell_i's easier?
+% I have the quotient commitments, so maybe that helps?
+
+\newcommand{\evssAlgorithm}{
+\setlist[enumerate]{leftmargin=15pt, itemsep=.3pt}
+\setlist[itemize]{leftmargin=*, itemsep=.3pt}
+\begin{algorithm}[t] % single column algorithm
+    \caption{\small \evss: A synchronous $(t,n)$ VSS}
+    \label{alg:vss}
+    \footnotesize
+    
+    \vspace{.2em}
+    \begin{center}
+        \textbf{Sharing Phase}
+    \end{center}
+    \vspace{-.5em}
+    \underline{Dealing round:}
+    \begin{enumerate}
+        \item The dealer picks $\phi\in_R \Fp[X]$ of degree $t-1$ with $s = \phi(0)$, computes all shares $s_i = \phi(i)$, and commits to $\phi$ as $c = g^{\phi(\tau)}$. 
+        \item Computes KZG proofs $\pi_i = g^{q_i(\tau)}$, $q_i(x) = \frac{\phi(x)-\phi(i)}{x-i}$, $\forall i\in[n]$.
+        \item \textit{Broadcasts} $c$ to all players. Then, sends $(s_i, \pi_i)$ to each player $i\in[n]$ over an \textit{authenticated, private} channel.
+    \end{enumerate}
+    \underline{Verification round:}
+    \begin{enumerate}
+        \item Each player $i\in [n]$ verifies $\pi_i$ against $c$ by checking if $e(c / g^{s_i}, g) = e(\pi_i, g^{\tau-i})$.
+              If this check fails (or $i$ received nothing from dealer), then $i$ broadcasts a \textit{complaint} against the dealer.
+    \end{enumerate}
+%    \underline{Complaint round (w/ KZG batch proofs):}
+%    \begin{enumerate}
+%        \item If the size of the set $S$ of complaining players is $\ge t$, then the dealer is \textit{disqualified}.
+%              Otherwise, the dealer computes a \textit{KZG batch proof} $\pi$ for all $\{s_i\}_{i\in S}$ and broadcasts $(S, \{s_i\}_{i\in S}, \pi)$.
+%              % In some sense, the round has finished after the KZG batch proof was broadcast, and the verification work done below
+%              % should be considered as part of a new round. But since this verification is not followed by another broadcast, it is not considered as a new round.
+%        \item If the batch proof does not verify, then the dealer is disqualified. Otherwise, each $i\in S$ now has his correct share $s_i$.
+%    \end{enumerate}
+    \underline{Complaint round:}
+    \begin{enumerate}
+        \item If the size of the set $S$ of complaining players is $\ge t$, the dealer is \textit{disqualified}.
+              Otherwise, the dealer reveals the correct shares with proofs by broadcasting $\{s_i, \pi_i\}_{i\in S}$.
+              % In some sense, the round has finished after the KZG batch proof was broadcast, and the verification work done below
+              % should be considered as part of a new round. But since this verification is not followed by another broadcast, it is not considered as a new round.
+        \item If any one proof does not verify (or dealer did not broadcast), the dealer is disqualified. Otherwise, each $i\in [n]$ now has his correct share $s_i$.
+    \end{enumerate}
+    
+    \begin{center}
+        \textbf{Reconstruction Phase}
+    \end{center}
+    \vspace{-.5em}
+    Given commitment $c$ and shares $(i, s_i,\pi_i)_{i\in T}$, $|T|\ge t$, the \textit{reconstructor}:
+    \begin{enumerate}
+        \item Verifies each $s_i$, identifying a subset $V$ of $t$ players with valid shares.
+        \item Interpolates $s=\sum_{i\in V} \Ell_i^V(0) s_i=\phi(0)$. 
+    \end{enumerate}
+\end{algorithm}
+}
+
+\evssAlgorithm
+
+\subsection{(Verifiable) Secret Sharing}
+\label{s:prelim:vss}
+\label{s:prelim:shamir-secret-sharing}
+A $(t,n)$ \textit{secret sharing} scheme allows a \textit{dealer} to split up a secret $s$ amongst $n$ \textit{players} such that \textit{only} subsets of size $\ge t$ players can reconstruct $s$.
+Secret sharing schemes were introduced independently by Shamir~\cite{how-to-share-a-secret} and Blakley~\cite{Blakley1979}.
+%In this paper, we focus on Shamir's secret sharing (SSS) protocol and its extensions.
+\textit{Shamir's secret sharing (SSS)} is split into two phases.
+In the \textit{sharing phase}, the dealer picks a degree $t-1$, random, univariate polynomial $\phi$, lets $s=\phi(0)$ and distributes a \textit{share} $s_i = \phi(i)$ to each player $i\in [n]$.
+In the \textit{reconstruction phase}, any subset $T\subset [n]$ of $t$ honest players can reconstruct $s$ by sending their shares to a \textit{reconstructor}.
+For each $i\in T$, the reconstructor computes a \textit{Lagrange coefficient} $\Ell_i^T(0) = \prod_{j\in T, j\ne i} {\frac{0-j}{i - j}}$.
+Then, he computes the secret as $s = \phi(0) = \sum_{i\in T} \Ell_i^T(0) s_i$ (see \cref{s:prelim:fft}).
+
+
+% Q: What if dealer picks polynomial of degree less than $t-1$ and commits to it? The Kate et al. commitment doesn't reveal the degree.
+% A: The answer is that secrecy is only guaranteed for *honest* dealers, since a dishonest dealer can always give some of the players the secret.
+% 
+% Q: What if dealer picks polynomial of degree t or higher? Then different subsets of t players will reconstruct different secrets.
+% A: Dealer can't do this because of the $(t-1)$-polyDH assumption.
+Unfortunately, SSS does not tolerate malicious dealers who distribute invalid shares, nor malicious players who might send invalid shares during reconstruction.
+To deal with this, \textit{Verifiable Secret Sharing (VSS)} protocols enable players to verify shares from a potentially-malicious dealer~\cite{CGMA85,Feldman1987Practical,Pedersen1991Noninteractive,polycommit}.
+Furthermore, VSS also enables the reconstructor to verify the shares before interpolating the (wrong) secret.
+Loosely speaking, VSS protocols must offer two properties against any adversary who compromises the dealer and $<t$ players: \textit{secrecy} and \textit{correctness}.
+Secrecy guarantees that no adversary learns the secret $s$ when the dealer is honest, since a malicious one can simply reveal $s$.
+Correctness guarantees that, after the sharing phase, either any set of $\ge t$ honest players can always reconstruct $s$ or the dealer is \textit{disqualified}.
+We refer the reader to~\cite{polycommit} for more formal VSS definitions. %, since our paper extends Kate et al.'s \evss.
+
+% Typically the round complexity of VSS means the round complexity of the sharing phase:
+% For example, \evss has 1 round for the dealer to broadcast the commitment and send shares.
+% Then, another round for the players to send their complaints.
+% Then, another round for the dealer to send back a batch proof for all complaining players.
+% In ~\cite{BKP11}, a 2-round VSS is presented, surprisingly.
+
+\subsubsection{Kate et al.'s \evss}
+\label{s:prelim:evss}
+At a high-level, \evss follows the style of previous VSS protocols~\cite{Feldman1987Practical,Pedersen1991Noninteractive}.
+In the \textit{dealing round}, the dealer commits to $\phi$ and sends each player their share and \textit{proof} that their share is correct.
+In the \textit{verification round}, each player verifies the proof for his share and, if incorrect, broadcasts a \textit{complaint}.
+Finally, in the \textit{complaint round}, the dealer resolves complaints (if any) by broadcasting the correct share of each complaining player.
+We give a detailed description of \evss in \cref{alg:vss} and its asymptotic complexity in \cref{t:vss-comparison}.
+
+From \cref{alg:vss}, \evss's \textit{overall communication} complexity is $\Theta(n)$ (since at most $2n+(t-1)$ shares and proofs are sent while dealing, complaining and reconstructing).
+\evss's reconstruction phase is $O(t\log^2{t} + n)$ time, since at most $n$ shares have to be verified before the secret can be interpolated fast in $\Theta(t\log^2{t})$ time~\cite{moderncomputeralgebra-ch10}.
+\evss's dealing round is $\Theta(nt)$ time, since $n$ KZG proofs must be computed.
+% Note: We point out in the Evaluation section that the evaluations $\phi(i)$ are obtained ``for free'' during this proof computation.
+% (It does not matter in terms of asymptotics, just concrete performance.)
+The verification round is $\Theta(1)$ time (per player).
+If $S$ is the set of complaining players, the complaint round takes $\Theta(|S|)$ time and communication for the dealer to send $|S|$ shares with proofs and $\Theta(|S|)$ time for each player to verify them.
+
+% Note: In practice, \evss and Feldman's VSS~\cite{Feldman1987Practical} take the same amount of overall \textbf{asymptotic} time, because \evss just shifts the high verification cost of Feldman's VSS into the dealing phase.
+% During reconstruction, for example, Feldman takes $\Theta(nt)$.
+% But Feldman can be implemented on faster curves, so it is faster.
+
+\newcommand{\ejfdkgAlgorithm}{
+%\begin{multicols}{2}
+%\begin{algorithm*} % two column algorithm
+\setlist[enumerate]{leftmargin=*, itemsep=.3pt}
+\setlist[itemize]{leftmargin=*, itemsep=.3pt}
+\begin{algorithm}[t] % single column algorithm
+    \caption{\small \ejfdkg's {Sharing Phase}}
+    \label{alg:dkg}
+    \footnotesize
+        \underline{Dealing round:}
+        Each player $i$:
+        \begin{enumerate}
+            \item Picks $f_i \in_R \Fp[X]$ of degree $t-1$, sets $z_i = f_i(0)$ and $c_i = g^{f_i(\tau)}$.
+            % Note: A NIZKPoK of $z_i$ w.r.t. to $g^{z_i}$ is necessary for securely verifying the KZG proof against $g^{z_i}$.
+            \item Computes $g^{z_i} = g^{f_i(0)}$, a KZG proof $\pi_{i,0}$ for $f_i(0)$ and a NIZKPoK $\nizkpok_i$ for $g^{f_i(0)}$
+                  and \textit{broadcasts} $(c_i, g^{z_i}, \pi_{i,0}, \nizkpok_i)$.
+            % NOTE: Sending $g^{z_i}$ could be deferred to later, and that would avoid the biasability of the final secret $s$ at the cost of an extra broadcast round. But PolyCommit_Ped must be used to hide g^{f_i(0)}.
+            \item Computes shares $s_{i,j} = f_i(j)$ and KZG proofs $\pi_{i,j}$ and 
+                  sends $(s_{i,j}, \pi_{i,j})$ to each $j\in[n]$ over an \textit{authenticated, private} channel.
+        \end{enumerate}
+        
+        \underline{Verification round:} 
+        For each $(c_i, g^{z_i}, \pi_{i,0}, \nizkpok_i, s_{i,j}, \pi_{i,j})$ from $i$, each $j$:
+        \begin{enumerate}
+            \item Verifies $\pi_{i,0}$ by checking $e(c_i/g^{z_i},g) = e(\pi_{i,0}, g^{\tau-0})$ and verifies the $\nizkpok_i$ NIZKPoK.
+            % Note: The fact that g^{z_i} partially leaks the MSB of z_i is problematic here, because now the the adversary can disqualify a P_i that he controls if that favors a certain MSB in the final \sum_i g^{z_i}. He can disqualify P_i by having another controlled player P_j complain about P_i and then having P_i intentionally broadcast a bad share.
+            \item Verifies its share $s_{i,j}$ using $e(c_i/g^{s_{i,j}},g) = e(\pi_{i,j}, g^{\tau-j})$.
+            % Note: If the f_i(0) check fails for player j, it fails for all players => all honest players complain => player i is automatically disqualified
+            \item If any of these checks fail (or nothing was received from $i$), then $j$ broadcasts a complaint against $i$.
+        \end{enumerate}
+        
+%        \underline{Complaint round (w/ KZG batch proofs):}
+%        \begin{enumerate}
+%            \item Let $S_i$ be the set of players complaining against $i$. If $|S_i| \ge t$, then $i$ is marked as \textit{disqualified} by all players.
+%                  Otherwise, if $|S_i| > 0$, then $i$ computes a \textit{KZG batch proof} $\kzgbatchproof_i$ for all $\{s_{i,j}\}_{j\in S_i}$ and broadcasts $(S_i, \{s_{i,j}\}_{j\in S_i}, \kzgbatchproof_i)$.
+%            \item If the batch proof $\kzgbatchproof_i$ does not verify, then $i$ is disqualified. 
+%                  Otherwise, each $j\in S_i$ now has his correct share $s_{i,j}$.
+%            \item Let $Q$ denote the set of players that were \textit{not} disqualified.
+%                  The agreed-upon (unknown) secret key $s=\sum_{j \in Q} z_j$.
+%                  Each $i$ 
+%                sets $c = \prod_{j\in Q} c_j$,
+%                sets the \textit{public key} $g^s = \prod_{j\in Q} g^{z_j}$,
+%                sets his share $s_i = \sum_{j\in Q} s_{j,i}$,
+%                and sets his KZG proof $\pi_i = \prod_{j\in Q} \pi_{j,i}$.
+%%            \begin{itemize}
+%%                \item $P_i$ computes his \textit{verification key} (VK) $g^{s_i}$ and tweaks the proof $\pi_i$ to vouch for his $g^{s_i}$ rather than $s_i$.
+%%                This allows $P_i$ to verifiably announce its VK to all other $P_j$'s
+%%            \end{itemize}
+%        \end{enumerate}
+
+        \underline{Complaint round:}
+        \begin{enumerate}
+            \item Let $S_i$ be the set of players complaining against $i$. If $|S_i| \ge t$, then $i$ is marked as \textit{disqualified} by all honest players.
+                  Otherwise, $i$ broadcasts $\{s_{i,j},\pi_{i,j}\}_{j\in S_i}$.
+            % In some sense, the round has finished after the broadcast, and the verification work done below
+            % should be considered as part of a new round. But since this verification is not followed by another broadcast, it is not considered as a new round.
+            \item If any one proof does not verify (or $i$ did not broadcast), then $i$ is disqualified. 
+                  Otherwise, each $j\in S_i$ now has his correct share $s_{i,j}$.
+            \item Let $Q$ denote the set of players that were \textit{not} disqualified.
+                  The agreed-upon (unknown) secret key $s=\sum_{j \in Q} z_j$.
+                  Each $i$ 
+                sets $c = \prod_{j\in Q} c_j$,
+                sets the \textit{public key} $g^s = \prod_{j\in Q} g^{z_j}$,
+                sets his share $s_i = \sum_{j\in Q} s_{j,i}$,
+                and sets his KZG proof $\pi_i = \prod_{j\in Q} \pi_{j,i}$.
+        \end{enumerate}
+        
+    %\textit{Postconditions:}
+    %All honest participants agree on the public key $g^s$ and have a share $s_i$ of $s$ such that any subgroup of size $t$ participants can reconstruct $s$.
+%\end{algorithm*}
+\end{algorithm}
+}
+
+\ejfdkgAlgorithm
+
+\subsection{Distributed Key Generation (DKG)}
+\label{s:prelim:dkg}
+
+TSS protocols pose a key generation problem: if one party $P$ splits $s$ to the $n$ signers (via SSS), $P$ would know $s$ and could sign on behalf of the group.
+This would make the TSS insecure and thus motivates \textit{distributed key generation} (DKG) protocols~\cite{dkg,Pedersen1991AThreshold}.
+A $(t,n)$ DKG protocol for discrete log cryptosystems allows $n$ players to jointly generate a secret key $s\in_R \Fp$ with public key $g^s\in \Group$ such that \textit{only} subsets of size $\ge t$ can reconstruct $s$.
+
+Unlike VSS protocols, where the dealer knows $s$ (see \cref{s:prelim:vss}), DKG protocols guarantee nobody learns $s$ during the execution of the protocol.
+Typically, DKG protocols achieve this by having each player $i$ secret-share its own secret $z_i$ and setting the \textit{final secret} $s$ to be $\sum_i z_i$.
+Similar to VSS, DKG protocols must offer two security properties against any adversary who compromises $<t$ players: \textit{secrecy} and \textit{correctness}.
+Informally, secrecy guarantees that no adversary can learn any information about $s$ beyond what is leaked by $g^s$.
+Correctness guarantees that all honest players agree on $g^s$ and any subset with $\ge t$ honest players can reconstruct $s$.
+
+\multipointEvalFigure
+
+\subsubsection{Kate's \ejfdkg}
+In this paper, we focus on improving \ejfdkg which, at a high-level, consists of $n$ parallel executions of \evss.
+We describe only its sharing phase in \cref{alg:dkg}, since it has the same reconstruction phase as \evss.
+Note that \ejfdkg makes use of \textit{non-interactive zero-knowledge proofs of knowledge (NIZKPoKs)}~\cite{CS97}.
+Although \ejfdkg is \textit{biasable} and produces an $s$ that is not guaranteed to be uniform, computing discrete logs on $g^s$ is still hard~\cite{Kate2010Distributed,Gennaro2003SecureApplications}.
+Also, debiasing DKG protocols is possible~\cite{dkg,NBB16,SJSW19}.
+
+\subsection{Polynomial Multipoint Evaluation}
+\label{s:prelim:multipoint-eval}
+
+We build upon \textit{polynomial multipoint evaluation} techniques~\cite{moderncomputeralgebra-ch10}.
+Given a degree $t$ polynomial $\phi$, naively evaluating it at $n > t$ points $x_1, \dots, x_n$ requires $\Theta(nt)$ time.
+This is fast when $t$ is very small relative to $n$ but can be slow when $t \approx n$, as is the case in many instantiations of threshold cryptosystems.
+Fortunately, a multipoint evaluation reduces this time to $O(n\log^2{n})$ using a divide and conquer approach.
+Specifically, one first computes $\phi_L(x)=\phi(x) \bmod (x-x_1)(x-x_2)\cdots(x-x_{n/2})$ and then $\phi_R(x)=\phi(x) \bmod (x-x_{n/2-1})(x-x_{n/2-2})\cdots(x-x_n)$
+Then, one simply recurses on the two \textit{half-sized} subproblems: evaluating $\phi_L(x)$ at $x_1, x_2, \dots, x_{n/2}$ and $\phi_R(x)$ at $x_{n/2-1}, x_{n/2-2},\dots x_n$.
+Ultimately, the leaves of this recursive computation store $\phi(x) \bmod (x-x_i)$, which is exactly $\phi(i)$ by the polynomial remainder theorem (see \cref{f:multipoint-eval}).
+
+For example, consider the multipoint evaluation of $\phi$ at $\{1,2,\dots,8\}$, which we depict in \cref{f:multipoint-eval}.
+We start at the root node $\varepsilon$.
+Here, we divide $\phi$ by the \textit{accumulator polynomial} $(x-1)(x-2)\dots(x-8)$ obtaining a \textit{quotient polynomial} $q_{1,8}$ and \textit{remainder polynomial} $r_{1,8}$.
+Then, its left and right children divide $r_{1,8}$ by the left and right ``half'' of $(x-1)(x-2)\dots(x-8)$, respectively.
+This proceeds recursively: each node $w$ divides $r_\parent(w)$ by its accumulator $a_w$, obtaining a quotient $q_w$ and remainder $r_w$ such that $r_{\parent(w)} = q_w a_w + r_w$.
+% Note: Technically, if n > t, the accumulators close to the top of the tree will not be necessary, so some time could be saved there.
+Note that all accumulator polynomials $a_w$ can be computed in $O(n\log^2{n})$ time by starting with the $(x-i)$ monomials as leaves of a binary tree and ``multiplying up the tree.''
+Since division by a degree-bound $n$ accumulator takes $O(n\log{n})$ time, the total time is $T(n)=2T(n/2)+O(n\log{n}) = O(n\log^2{n})$~\cite{moderncomputeralgebra-ch10}.
+%At each level $i$ in this tree ($i=0$ is the root), $2^i$ divisions are performed between polynomials of degree $t/2^i$ and $n/2^i$ in time $O\left(n/2^i \log{\left(n/2^i\right)}\right)$.

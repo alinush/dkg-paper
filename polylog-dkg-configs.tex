@@ -1,0 +1,44 @@
+\subsection{Polylogarithmic DKG Configurations}
+\label{s:polylog-dkg-confgs}
+
+As discussed in \cref{s:related-work}, Canny and Sorkin presented a \textit{sparse matrix} DKG with $O(m^3)$ time and communication per player, where $m$ is a group size~\cite{dkg-polylog}.
+Depending on the desired threshold $(t,n)$ and the number $f$ of malicious nodes tolerated, the group size $m$ can be as small as $\Theta(\log^3(n))$.
+Unfortunately, for $f$ sufficiently close to $t$, the group size becomes too large, approaching $n/2$ (see \cref{t:polylog-dkg-configs-65k}).
+
+\begin{table}[h]
+    %\large
+    %\small
+    \footnotesize
+    %\scriptsize
+    \centering
+    \caption{
+        The group size $m$ and for various $(t,n)$ sparse matrix DKGs with $f$ failures tolerated.
+    }
+    \label{t:polylog-dkg-configs-65k} % must go after \caption{} for \cref{} to work
+    \begin{tabular}{ccccc}
+        %\toprule
+        \makecell{$\varepsilon$}
+        & \makecell{Group size $m$}
+        & \makecell{$f = (1/2 - \varepsilon)n$}
+        & \makecell{$t = (1/2 + \varepsilon)n$}
+        & \makecell{$n$}\\
+        \toprule
+        % Note: For n = 2^16, epsilon < 0.1 cannot be used
+        0.1  & 50,598 & 26,214 & 39,321 & 65,536 \\
+        0.15 & 14,222 & 22,937 & 42,598 & 65,536 \\
+        0.2  & 5,691  & 19,660 & 45,875 & 65,536 \\
+        0.25 & 2,735  & 16,384 & 49,152 & 65,536 \\
+        0.3  & 1,475  & 13,107 & 52,428 & 65,536 \\
+        0.33 & 1,057  & 11,141 & 54,394 & 65,536 \\
+        0.4  & 505    & 6,553  & 8,982  & 65,536 \\
+        \toprule
+        0.05 & 445,909 & 471,859 & 576,716 & 1,048,576 \\
+        0.1	 & 53,022  & 419,430 & 629,145 & 1,048,576 \\
+        0.15 & 14,949  & 367,001 & 681,574 & 1,048,576 \\
+        0.2	 & 5,977   & 314,572 & 734,003 & 1,048,576 \\
+        0.25 & 2,871   & 262,144 & 786,432 & 1,048,576 \\
+        0.3  & 1,548   & 209,715 & 838,860 & 1,048,576 \\
+        0.33 & 1,107   & 178,257 & 870,318 & 1,048,576 \\
+        0.4  & 527     & 104,857 & 943,718 & 1,048,576
+    \end{tabular}
+\end{table}

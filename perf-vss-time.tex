@@ -1,0 +1,456 @@
+%
+% Data for column 'avg_deal_usec'
+% (improvements must be better than 1.2 and occur after n > 16)
+%
+\newcommand{\evssVssDealTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{989 mus\xspace}
+        {7}{4.7 ms\xspace}
+        {15}{12.7 ms\xspace}
+        {31}{39.9 ms\xspace}
+        {63}{133 ms\xspace}
+        {127}{457 ms\xspace}
+        {255}{1.6 secs\xspace}
+        {511}{5.7 secs\xspace}
+        {1023}{20.6 secs\xspace}
+        {2047}{1.26 mins\xspace}
+        {4095}{4.65 mins\xspace}
+        {8191}{17.4 mins\xspace}
+        {16383}{1.1 hrs\xspace}
+        {32767}{4.1 hrs\xspace}
+        {65535}{15.1 hrs\xspace}
+        {131071}{2.2 days\xspace}
+        {262143}{7.7 days\xspace}
+        {524287}{27 days\xspace}
+        {1048575}{94 days\xspace}
+        {2097151}{330 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssDealTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{987 mus\xspace}
+        {7}{3.6 ms\xspace}
+        {15}{9.1 ms\xspace}
+        {31}{23 ms\xspace}
+        {63}{45.9 ms\xspace}
+        {127}{99.5 ms\xspace}
+        {255}{219 ms\xspace}
+        {511}{461 ms\xspace}
+        {1023}{963 ms\xspace}
+        {2047}{2.2 secs\xspace}
+        {4095}{4.6 secs\xspace}
+        {8191}{9.5 secs\xspace}
+        {16383}{18 secs\xspace}
+        {32767}{36 secs\xspace}
+        {65535}{1.24 mins\xspace}
+        {131071}{3.1 mins\xspace}
+        {262143}{5.2 mins\xspace}
+        {524287}{10.3 mins\xspace}
+        {1048575}{21 mins\xspace}
+        {2097151}{42 mins\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssDealTimeImprovOverevss}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{1.0\texttimes\xspace}
+        {7}{1.3\texttimes\xspace}
+        {15}{1.4\texttimes\xspace}
+        {31}{1.7\texttimes\xspace}
+        {63}{2.9\texttimes\xspace}
+        {127}{4.6\texttimes\xspace}
+        {255}{7.3\texttimes\xspace}
+        {511}{12.3\texttimes\xspace}
+        {1023}{21.4\texttimes\xspace}
+        {2047}{34.7\texttimes\xspace}
+        {4095}{60\texttimes\xspace}
+        {8191}{109\texttimes\xspace}
+        {16383}{212\texttimes\xspace}
+        {32767}{406\texttimes\xspace}
+        {65535}{732\texttimes\xspace}
+        {131071}{1016\texttimes\xspace}
+        {262143}{2134\texttimes\xspace}
+        {524287}{3774\texttimes\xspace}
+        {1048575}{6459\texttimes\xspace}
+        {2097151}{11299\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssDealTimeOutperformNevss}{31}
+
+
+%
+% Data for column 'avg_verify_usec'
+% (improvements must be better than 1.2 and occur after n > 3)
+%
+\newcommand{\evssVssVerifyTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{2.19 ms\xspace}
+        {7}{2.11 ms\xspace}
+        {15}{2.09 ms\xspace}
+        {31}{2.16 ms\xspace}
+        {63}{2.25 ms\xspace}
+        {127}{2.15 ms\xspace}
+        {255}{2.15 ms\xspace}
+        {511}{2.15 ms\xspace}
+        {1023}{2.15 ms\xspace}
+        {2047}{2.24 ms\xspace}
+        {4095}{2.16 ms\xspace}
+        {8191}{2.36 ms\xspace}
+        {16383}{2.13 ms\xspace}
+        {32767}{2.17 ms\xspace}
+        {65535}{2.16 ms\xspace}
+        {131071}{2.15 ms\xspace}
+        {262143}{2.15 ms\xspace}
+        {524287}{2.14 ms\xspace}
+        {1048575}{2.09 ms\xspace}
+        {2097151}{2.08 ms\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssVerifyTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{2.07 ms\xspace}
+        {7}{3.00 ms\xspace}
+        {15}{3.93 ms\xspace}
+        {31}{4.86 ms\xspace}
+        {63}{5.78 ms\xspace}
+        {127}{6.71 ms\xspace}
+        {255}{7.63 ms\xspace}
+        {511}{8.56 ms\xspace}
+        {1023}{9.48 ms\xspace}
+        {2047}{10.40 ms\xspace}
+        {4095}{11.33 ms\xspace}
+        {8191}{12.26 ms\xspace}
+        {16383}{13.19 ms\xspace}
+        {32767}{14.10 ms\xspace}
+        {65535}{15.03 ms\xspace}
+        {131071}{15.96 ms\xspace}
+        {262143}{16.89 ms\xspace}
+        {524287}{17.81 ms\xspace}
+        {1048575}{18.73 ms\xspace}
+        {2097151}{19.85 ms\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\evssVssVerifyTimeImprovOveramt}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{0.95\texttimes\xspace}
+        {7}{1.43\texttimes\xspace}
+        {15}{1.88\texttimes\xspace}
+        {31}{2.25\texttimes\xspace}
+        {63}{2.57\texttimes\xspace}
+        {127}{3.1\texttimes\xspace}
+        {255}{3.54\texttimes\xspace}
+        {511}{3.99\texttimes\xspace}
+        {1023}{4.41\texttimes\xspace}
+        {2047}{4.65\texttimes\xspace}
+        {4095}{5.24\texttimes\xspace}
+        {8191}{5.2\texttimes\xspace}
+        {16383}{6.18\texttimes\xspace}
+        {32767}{6.5\texttimes\xspace}
+        {65535}{6.96\texttimes\xspace}
+        {131071}{7.4\texttimes\xspace}
+        {262143}{7.84\texttimes\xspace}
+        {524287}{8.3\texttimes\xspace}
+        {1048575}{8.97\texttimes\xspace}
+        {2097151}{9.57\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\evssVssVerifyTimeOutperformNamt}{7}
+
+
+%
+% Data for column 'avg_reconstr_bc_usec'
+% (improvements must be better than 1.2 and occur after n > 3)
+%
+\newcommand{\evssVssReconstrBcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{4.9 ms\xspace}
+        {7}{9 ms\xspace}
+        {15}{17.5 ms\xspace}
+        {31}{35 ms\xspace}
+        {63}{75 ms\xspace}
+        {127}{129 ms\xspace}
+        {255}{259 ms\xspace}
+        {511}{510 ms\xspace}
+        {1023}{1 sec\xspace}
+        {2047}{2.1 secs\xspace}
+        {4095}{4.2 secs\xspace}
+        {8191}{9 secs\xspace}
+        {16383}{16 secs\xspace}
+        {32767}{33 secs\xspace}
+        {65535}{1.1 mins\xspace}
+        {131071}{2.2 mins\xspace}
+        {262143}{4.5 mins\xspace}
+        {524287}{11 mins\xspace}
+        {1048575}{22 mins\xspace}
+        {2097151}{34 mins\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssReconstrBcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{4.8 ms\xspace}
+        {7}{11.6 ms\xspace}
+        {15}{27 ms\xspace}
+        {31}{54 ms\xspace}
+        {63}{115 ms\xspace}
+        {127}{233 ms\xspace}
+        {255}{469 ms\xspace}
+        {511}{941 ms\xspace}
+        {1023}{1.9 secs\xspace}
+        {2047}{4 secs\xspace}
+        {4095}{8 secs\xspace}
+        {8191}{16 secs\xspace}
+        {16383}{33 secs\xspace}
+        {32767}{1 mins\xspace}
+        {65535}{2 mins\xspace}
+        {131071}{4.1 mins\xspace}
+        {262143}{8.4 mins\xspace}
+        {524287}{16.6 mins\xspace}
+        {1048575}{32 mins\xspace}
+        {2097151}{1.07 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\evssVssReconstrBcTimeImprovOveramt}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{0.98\texttimes\xspace}
+        {7}{1.29\texttimes\xspace}
+        {15}{1.56\texttimes\xspace}
+        {31}{1.55\texttimes\xspace}
+        {63}{1.54\texttimes\xspace}
+        {127}{1.8\texttimes\xspace}
+        {255}{1.81\texttimes\xspace}
+        {511}{1.85\texttimes\xspace}
+        {1023}{1.83\texttimes\xspace}
+        {2047}{1.9\texttimes\xspace}
+        {4095}{1.98\texttimes\xspace}
+        {8191}{1.84\texttimes\xspace}
+        {16383}{2\texttimes\xspace}
+        {32767}{1.85\texttimes\xspace}
+        {65535}{1.84\texttimes\xspace}
+        {131071}{1.84\texttimes\xspace}
+        {262143}{1.89\texttimes\xspace}
+        {524287}{1.48\texttimes\xspace}
+        {1048575}{1.45\texttimes\xspace}
+        {2097151}{1.87\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\evssVssReconstrBcTimeOutperformNamt}{7}
+
+
+%
+% Data for column 'avg_reconstr_wc_usec'
+% (improvements must be better than 1.2 and occur after n > 3)
+%
+\newcommand{\evssVssReconstrWcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{6.9 ms\xspace}
+        {7}{15 ms\xspace}
+        {15}{31.9 ms\xspace}
+        {31}{67 ms\xspace}
+        {63}{146 ms\xspace}
+        {127}{255 ms\xspace}
+        {255}{513 ms\xspace}
+        {511}{1 sec\xspace}
+        {1023}{2.06 secs\xspace}
+        {2047}{4.28 secs\xspace}
+        {4095}{8.25 secs\xspace}
+        {8191}{17.9 secs\xspace}
+        {16383}{32 secs\xspace}
+        {32767}{1.1 mins\xspace}
+        {65535}{2.20 mins\xspace}
+        {131071}{4.41 mins\xspace}
+        {262143}{8.84 mins\xspace}
+        {524287}{22.5 mins\xspace}
+        {1048575}{44 mins\xspace}
+        {2097151}{1.13 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssReconstrWcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{7.6 ms\xspace}
+        {7}{21 ms\xspace}
+        {15}{56 ms\xspace}
+        {31}{126 ms\xspace}
+        {63}{297 ms\xspace}
+        {127}{662 ms\xspace}
+        {255}{1.45 secs\xspace}
+        {511}{3.2 secs\xspace}
+        {1023}{6.8 secs\xspace}
+        {2047}{15.7 secs\xspace}
+        {4095}{34 secs\xspace}
+        {8191}{1.2 mins\xspace}
+        {16383}{2.5 mins\xspace}
+        {32767}{5 mins\xspace}
+        {65535}{10.5 mins\xspace}
+        {131071}{22 mins\xspace}
+        {262143}{47 mins\xspace}
+        {524287}{1.8 hrs\xspace}
+        {1048575}{3.5 hrs\xspace}
+        {2097151}{6.8 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\evssVssReconstrWcTimeImprovOveramt}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{1.12\texttimes\xspace}
+        {7}{1.4\texttimes\xspace}
+        {15}{1.76\texttimes\xspace}
+        {31}{1.88\texttimes\xspace}
+        {63}{2.03\texttimes\xspace}
+        {127}{2.59\texttimes\xspace}
+        {255}{2.83\texttimes\xspace}
+        {511}{3.12\texttimes\xspace}
+        {1023}{3.32\texttimes\xspace}
+        {2047}{3.68\texttimes\xspace}
+        {4095}{4.17\texttimes\xspace}
+        {8191}{4.1\texttimes\xspace}
+        {16383}{4.75\texttimes\xspace}
+        {32767}{4.55\texttimes\xspace}
+        {65535}{4.75\texttimes\xspace}
+        {131071}{5\texttimes\xspace}
+        {262143}{5.3\texttimes\xspace}
+        {524287}{4.77\texttimes\xspace}
+        {1048575}{4.75\texttimes\xspace}
+        {2097151}{6\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\evssVssReconstrWcTimeOutperformNamt}{7}
+
+
+%
+% Data for column 'end_to_end_bc_usec'
+% (improvements must be better than 1.2 and occur after n > 16)
+%
+\newcommand{\evssVssEndToEndBcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{8.1 ms\xspace}
+        {7}{15.8 ms\xspace}
+        {15}{32 ms\xspace}
+        {31}{77 ms\xspace}
+        {63}{210 ms\xspace}
+        {127}{589 ms\xspace}
+        {255}{1.9 secs\xspace}
+        {511}{6.2 secs\xspace}
+        {1023}{21 secs\xspace}
+        {2047}{1.3 mins\xspace}
+        {4095}{4.7 mins\xspace}
+        {8191}{17.6 mins\xspace}
+        {16383}{1.1 hrs\xspace}
+        {32767}{4.1 hrs\xspace}
+        {65535}{15 hrs\xspace}
+        {131071}{2.2 days\xspace}
+        {262143}{7.7 days\xspace}
+        {524287}{27 days\xspace}
+        {1048575}{94 days\xspace}
+        {2097151}{330 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssEndToEndBcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{7.86 ms\xspace}
+        {7}{18.19 ms\xspace}
+        {15}{40.33 ms\xspace}
+        {31}{82.46 ms\xspace}
+        {63}{167.12 ms\xspace}
+        {127}{339.30 ms\xspace}
+        {255}{696.11 ms\xspace}
+        {511}{1.41 secs\xspace}
+        {1023}{2.86 secs\xspace}
+        {2047}{6.25 secs\xspace}
+        {4095}{12.94 secs\xspace}
+        {8191}{26.24 secs\xspace}
+        {16383}{51.48 secs\xspace}
+        {32767}{1.62 mins\xspace}
+        {65535}{3.27 mins\xspace}
+        {131071}{7.20 mins\xspace}
+        {262143}{13.60 mins\xspace}
+        {524287}{26.96 mins\xspace}
+        {1048575}{53.41 mins\xspace}
+        {2097151}{1.77 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssEndToEndBcTimeImprovOverevss}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{1.03\texttimes\xspace}
+        {7}{0.87\texttimes\xspace}
+        {15}{0.8\texttimes\xspace}
+        {31}{0.94\texttimes\xspace}
+        {63}{1.26\texttimes\xspace}
+        {127}{1.7\texttimes\xspace}
+        {255}{2.7\texttimes\xspace}
+        {511}{4.4\texttimes\xspace}
+        {1023}{7.6\texttimes\xspace}
+        {2047}{12\texttimes\xspace}
+        {4095}{21\texttimes\xspace}
+        {8191}{40\texttimes\xspace}
+        {16383}{75\texttimes\xspace}
+        {32767}{151\texttimes\xspace}
+        {65535}{277\texttimes\xspace}
+        {131071}{441\texttimes\xspace}
+        {262143}{817\texttimes\xspace}
+        {524287}{1442\texttimes\xspace}
+        {1048575}{2548\texttimes\xspace}
+        {2097151}{4484\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssEndToEndBcTimeOutperformNevss}{63}
+
+
+%
+% Data for column 'end_to_end_wc_usec'
+% (improvements must be better than 1.2 and occur after n > 16)
+%
+\newcommand{\evssVssEndToEndWcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{10 ms\xspace}
+        {7}{21.8 ms\xspace}
+        {15}{46 ms\xspace}
+        {31}{109 ms\xspace}
+        {63}{282 ms\xspace}
+        {127}{715 ms\xspace}
+        {255}{2.1 secs\xspace}
+        {511}{6.7 secs\xspace}
+        {1023}{22.7 secs\xspace}
+        {2047}{1.33 mins\xspace}
+        {4095}{4.8 mins\xspace}
+        {8191}{17.7 mins\xspace}
+        {16383}{1.1 hrs\xspace}
+        {32767}{4.1 hrs\xspace}
+        {65535}{15 hrs\xspace}
+        {131071}{2.2 days\xspace}
+        {262143}{7.7 days\xspace}
+        {524287}{27 days\xspace}
+        {1048575}{94 days\xspace}
+        {2097151}{330 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssEndToEndWcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{10.7 ms\xspace}
+        {7}{27 ms\xspace}
+        {15}{69 ms\xspace}
+        {31}{154 ms\xspace}
+        {63}{349 ms\xspace}
+        {127}{768.5 ms\xspace}
+        {255}{1.68 secs\xspace}
+        {511}{3.64 secs\xspace}
+        {1023}{7.8 secs\xspace}
+        {2047}{18 secs\xspace}
+        {4095}{39 secs\xspace}
+        {8191}{1.4 mins\xspace}
+        {16383}{2.9 mins\xspace}
+        {32767}{5.6 mins\xspace}
+        {65535}{11.7 mins\xspace}
+        {131071}{25 mins\xspace}
+        {262143}{52 mins\xspace}
+        {524287}{1.96 hrs\xspace}
+        {1048575}{3.86 hrs\xspace}
+        {2097151}{7.5 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssEndToEndWcTimeImprovOverevss}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{0.94\texttimes\xspace}
+        {7}{0.79\texttimes\xspace}
+        {15}{0.67\texttimes\xspace}
+        {31}{0.71\texttimes\xspace}
+        {63}{0.81\texttimes\xspace}
+        {127}{0.93\texttimes\xspace}
+        {255}{1.26\texttimes\xspace}
+        {511}{1.85\texttimes\xspace}
+        {1023}{2.91\texttimes\xspace}
+        {2047}{4.45\texttimes\xspace}
+        {4095}{7.36\texttimes\xspace}
+        {8191}{13\texttimes\xspace}
+        {16383}{23\texttimes\xspace}
+        {32767}{43\texttimes\xspace}
+        {65535}{77\texttimes\xspace}
+        {131071}{126\texttimes\xspace}
+        {262143}{212\texttimes\xspace}
+        {524287}{330\texttimes\xspace}
+        {1048575}{588\texttimes\xspace}
+        {2097151}{1055\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssEndToEndWcTimeOutperformNevss}{255}
+
+

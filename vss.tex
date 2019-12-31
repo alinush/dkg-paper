@@ -1,0 +1,67 @@
+\subsection{Scalable Verifiable Secret Sharing}
+\label{s:scalable-vss}
+In this section, we scale $(t,n)$ VSS protocols to large $n$ in the difficult case when $t > n/2$.
+Specifically, we reduce \evss's dealing time from $\Theta(nt)$ to \amtDealTime by replacing KZG proofs with AMT proofs.
+We call this new VSS protocol \ourvss and describe it below.
+
+\subsubsection{Faster dealing}
+\label{s:scalable-vss:overview}
+The difference between \ourvss and \evss is very small.
+First, players' shares are computed as $s_i = \phi(\omega_N^{i-1})$ (rather than $\phi(i)$ as in \evss), where $N$ is the smallest power of two $\ge n$.
+Second, instead of using (slow) KZG proofs, the dealer computes an AMT for $\phi$ at points $\{\omega_N^{i-1}\}_{i\in[n]}$, obtaining the shares $s_i$ for free in the process.
+Then, as in \evss, the dealer sends each player $i$ its share $s_i$ but now with an AMT proof $\pi_i$ (see \cref{s:amt:computing-proofs}).
+%(i.e., all quotient commitments along $\treepath(i)$ in the AMT of $\phi$).
+The verification round, complaint round and reconstruction phase remain the same, except they all use AMT proofs now.
+
+\ourvss's dealing time is \amtDealTime, dominated by the time to compute an AMT.
+This is a significant reduction from \evss's $\Theta(nt)$ time, but comes at a small cost due to our larger AMT proofs.
+First, the verification round time increases from $\Theta(1)$ to \amtOneShareVerifTime.
+Second, the complaint round complexity increases from $O(t)$ to $O(t\log{t})$ time and communication (but we improve it in \cref{s:scalable-vss:batch-complaints}).
+Third, the reconstruction phase time increases from $\Theta(t\log^2{t} + n)$ to $O(t\log^2{t} + n\log{t})$  (but we improve it in \cref{s:scalable-vss:reconstruction}).
+Finally, the overall communication increases from $\Theta(n)$ to $\amtAllShareVerifTime$.
+Nonetheless, in \cref{s:eval:vss}, we show \ourvss's end-to-end time is much smaller than \evss's, which makes these increases justifiable.
+
+\subsubsection{Faster complaints}
+\label{s:scalable-vss:batch-complaints}
+Kate et al. previously point out that KZG batch proofs (see \cref{s:prelim:polycommit:kzg:batch}) can be used to reduce the communication and the \textit{concrete} computational complexity of \evss's complaint round~\cite{polycommit}.
+Suppose $S$ is the set of complaining players.
+Without batch proofs, the dealer only has to broadcast $|S|$ previously-computed KZG proofs and each player has to verify them by computing $2|S|$ pairings.
+With batch proofs, the dealer spends $\Theta(|S|\log^2{|S|}+t\log{t})$ time to compute the batch proof and each player spends $\Theta(|S|\log^2{|S|}))$ to verify it.
+% i.e., because dealer has to interpolate a(x) from its |S| roots and divide \phi(x) of degree t by a(x)
+% i.e., because a player has to interpolate a(x) from its |S| roots (i.e., the complaing player IDs) and r(x) from the |S| shares (i.e., r(i)=s_i)
+
+While batch proofs increase asymptotic complexity for the dealer and players, the concrete complexity decreases, since players now only compute two pairings rather than $2|S|$.
+% Note: Making a claim about concrete performance of complaint verification without evaluation here.
+% Ideally, should have measured the end-to-end time w/ and w/o batch proofs and investigate for which thresholds t batch proofs start making sense.
+% After all, the verifiers have to interpolate a polynomial, which could be slower than 2|S| pairings for sufficiently small |S|.
+Furthermore, the communication complexity decreases, since only 1 proof rather than $|S|$ needs to be broadcast.
+Thus, \ourvss can also use batch proofs and maintain the same performance as \evss during the complaint round.
+(However, in \cref{t:vss-comparison}, we do not assume this optimization.)
+
+\subsubsection{Efficient reconstruction}
+\label{s:scalable-vss:reconstruction}
+In some cases, we can reduce the number of pairings computed during \ourvss's reconstruction phase.
+In this phase, the reconstructor is given anywhere from $t$ to $n$ shares and their AMT proofs.
+His task is to find a subset of $t$ valid shares and interpolate the secret.
+Let us first consider the \textit{best case}, where all submitted shares are \textit{valid}.
+In this case, if the reconstructor naively verifies any $t$ AMT proofs, he spends $\Theta(t\log{t})$ time.
+But he would be computing the same quotient-accumulator pairings multiple times (as in \cref{eq:amt-verify}), since proofs with intersecting paths will share quotient commitments.
+By memoizing these computations, the reconstructor can verify the $t$ proofs in $\Theta(t)$ time.
+Alternatively, this can be sped up by exposing a $g^s$ public key during dealing (as in DKG protocols; see \cref{s:scalable-dkg:reconstr}).
+
+Now let us consider the \textit{worst case}, where $n-t$ shares are invalid and $t$ shares are valid.
+The reconstructor wants to find the $t$ valid shares as fast as possible.
+Once again, he can memoize the quotient-accumulator pairings that are part of successfully validated proofs.
+This way, for the $t$ valid proofs, only $\Theta(t)$ pairings need to be computed.
+Thus, at most $\Theta((n-t)\log{t})$ pairings could possibly be computed for the invalid proofs.
+The worst-case reconstruction time remains $\Theta(n\log{t})$ but, in practice, the number of pairings is reduced significantly by the memoization.
+%In practice, the reconstructor might find valid shares earlier and avoid verifying shares whose proof path intersects with valid share proof paths but have different intersecting quotient commitments.
+
+\subsubsection{Public parameters}
+\label{s:scalable-vss:public-params}
+The \ourvss dealer needs $(t-1)$-SDH public parameters, just like in \evss.
+This is because committing to accumulator polynomials of degree $\ge t$ is not necessary, as discussed in \cref{s:amt:public-parameters}.
+In fact, adding more public parameters for committing to degree $\ge t$ polynomials would break the \textit{correctness} of \evss and thus of \ourvss~\cite{polycommit}.
+Specifically, if the dealer commits to a degree $\ge t$ polynomial $\phi$, then different secrets could be reconstructed, depending on the subset of players whose shares are used.
+This is why the $(t-1)$-polyDH assumption (see \cref{d:poly-dh}) is needed in both protocols.
+Finally, \ourvss players (and the reconstructor) need $\Theta(\log{t})$ public parameters to verify AMT proofs, an increase from \evss' $\Theta(1)$ (i.e., $g^\tau$).

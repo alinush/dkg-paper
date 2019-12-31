@@ -1,0 +1,62 @@
+\input{perf-bls-time}
+\input{perf-vss-time}
+\input{perf-dkg-time}
+\input{perf-dkg-bw}
+
+\newcommand{\vssOutperformWcN}{\amtVssEndToEndWcTimeOutperformNevss}
+\newcommand{\vssOutperformBcN}{\amtVssEndToEndBcTimeOutperformNevss}
+\newcommand{\dkgOutperformWcN}{\amtDkgEndToEndWcTimeOutperformNejf}
+\newcommand{\dkgOutperformBcN}{\amtDkgEndToEndBcTimeOutperformNejf}
+
+% Compute the minimum threshold where we start seeing improvements.
+% (We focus on the worst case here.)
+\MIN{\vssOutperformWcN}{\dkgOutperformWcN}{\minVssDkgOutperformN}
+\MIN{\blsOutperformN}{\minVssDkgOutperformN}{\minOutperformNtmp}
+\newcommand{\minOutperformN}{\minOutperformNtmp\xspace}
+
+\newcommand{\kateDealExtrapolationFactor}{3.5}
+
+% This is the 'n' at which we start extrapolating numbers for, including n itself.
+%\newcommand{\evssExtrapolateN}{131071}
+%\newcommand{\ejfdkgExtrapolateN}{131071}
+
+% BLS friendly numbers
+\newcommand{\blsNaiveTimeFriendly}[1]{%
+    \IfStrEqCase{#1}{
+        {262143}{30 minutes\xspace}
+        {2097151}{1.5 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\blsEffTimeFriendly}[1]{%
+    \IfStrEqCase{#1}{
+        {262143}{6 seconds\xspace}
+        {2097151}{46 seconds\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+        
+\newcommand{\blsTimeImprovFriendly}[1]{%
+    \IfStrEqCase{#1}{
+        {2097151}{3000$\times$\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+        
+% VSS friendly numbers
+\newcommand{\evssVssEndToEndBcTimeFriendly}[1]{%
+    \IfStrEqCase{#1}{
+        {131071}{2.2 days}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtVssEndToEndBcTimeFriendly}[1]{%
+    \IfStrEqCase{#1}{
+        {131071}{8 minutes}}[\textcolor{red}{\textbf{NODATA}}]}
+
+% DKG friendly numbers
+\newcommand{\ejfDkgEndToEndWcTimeFriendly}[1]{%
+    \IfStrEqCase{#1}{
+        {262143}{8 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\ejfDkgEndToEndBcTimeFriendly}[1]{%
+    \IfStrEqCase{#1}{
+        {131071}{2.4 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgEndToEndWcTimeFriendly}[1]{%
+    \IfStrEqCase{#1}{
+        {262143}{2.3 hours\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgEndToEndBcTimeFriendly}[1]{%
+    \IfStrEqCase{#1}{
+        {131071}{4 minutes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}

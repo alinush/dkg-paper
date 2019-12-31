@@ -1,0 +1,54 @@
+\subsection{AMT Prover Time and Proof Sizes}
+\label{s:amt:proof-time-and-sizes}
+We will restrict ourselves to our $n = 2^m$ and $\deg{\phi}=t-1 < n$ setting.
+We first show that computing our optimized, roots-of-unity-based AMT takes $O(n\log{t})$ time (see \cref{s:amt:roots-of-unity}).
+The key observation is that, when computing the AMT, divisions at higher levels (i.e., closer to the root) in the tree are \textit{trivial} and need not be performed.
+Specifically, at sufficiently high levels, the degree of the divisors (i.e., accumulators) are larger than the degrees of the dividends (i.e., remainders), and always give quotients equal to zero.
+Since zero quotients can be easily recreated by verifiers, their commitments need not be included in the proof.
+We expand on this next.
+
+Let us number levels differently, from $\log{n}$ (the root) to 0 (the leaves), so that level $i$ has $n/2^i$ nodes, each with an accumulator of degree $2^i$.
+Now, let $k$ be the smallest value such that $2^k \le \deg{\phi} < 2^{k+1}$.
+In other words, $k$ is the level at which accumulator degrees are $\le \deg{\phi}$ and thus divisions are non-trivial.
+Put differently, each node on level $k$ will be the root node of an (authenticated) multipoint evaluation (sub)tree.
+We argue that the time to compute any one such subtree is $O(2^k \log{2^k})$ and, since there are $n/2^k$ such subtrees, the final AMT takes $O(n\log{2^k}) = O(n\log{t})$ time since $2^k\le t-1=\deg{\phi}$.
+We prove this inductively next.
+
+At the root node of a level $k$ subtree, the dividend $d_k = \phi$ has $\deg{d_k} < 2^{k+1}$ (by definition of $k$ above).
+The accumulator $a_k$ has $\deg{a_k} = 2^k$.
+Thus, the quotient $q_k = d_k/a_k$ will have $\deg{q_k} = \deg{d_k}-\deg{a_k}< 2^{k+1} - 2^k = 2^k$ and the remainder $r_k = d_k \bmod a_k$ will have $\deg{r_k} < \deg{a_k} = 2^k$.
+The division at this level will only take $O(\deg{d_k})=O(2^{k+1})$ time, thanks to the $(x^{2^k} + c)$ form of $a_k$.
+Committing to the quotient will take $O(2^{k})$ time.
+To summarize, at level $k$ we are doing $O(2^{k+1})$ work and $\deg{d_k} < 2^{k+1}, \deg{a_k} = 2^k, \deg{q_k} < 2^k, \deg{r_k} < 2^k$.
+Next, we argue that the amount of work \textit{per node} on level $k-1$ is half the work per node at level $k$.
+This is because (1) the dividend $d_{k-1}$ is set to the remainder $r_k$ from the parent, so $\deg{d_{k-1}} < 2^k$, (2) $\deg{a_{k-1}}=2^{k-1}$, (3) $\deg{q_{k-1}} = \deg{d_{k-1}}-\deg{a_{k-1}}<2^k-2^{k-1}=2^{k-1}$ and (4) $\deg{r_{k-1}} < \deg{a_{k-1}}=2^{k-1}$.
+Thus, at level $k-1$, the division takes $O(2^k)$ time and committing to the quotient takes $O(2^{k-1})$ time. 
+As a result, the time to compute the subtree can be expressed as $T(2^{k+1}) = 2T(2^{k+1} / 2) + O(2^{k+1}) = O(2^{k}\log{2^{k}})$.
+
+% - Q: What is proof computation time then? A: $O(n\log{t})$
+%    - Let $k$ be the greatest value such that $2^k \le t-1 < 2^{k-1}$.
+%    - $k$ is the level where we actually start dividing the root polynomial $p$ of degree $t-1$ by an accumulator of degree $2^k$
+%    - At level $k$ (where $k=0$ are the leaves), we have $n/2^k$ nodes.
+%    - At each node on level $k$, we do an $O(t)$ division (dividend has deg $t-1$ and divisor has deg less than that)
+%    - And, in that node's subtree, we do $O(t\log{t})$ work overall
+%    - So, in the whole tree we do $O(n/2^k t\log{t})$ work
+%    - So close to $O(n\log{t})$ time
+
+Finally, an AMT proof is $O(\log{t})$-sized.
+Recall that quotients in the AMT are non-zero only at levels $k$ and below, where $2^k \le t-1 < 2^{k+1}$.
+Thus, an AMT proof will only have non-zero quotients at levels $k, k-1, k-2, \dots, 1, 0$.
+Since $k = \floor{\log_2(t-1)}$ the exact proof size is $\floor{\log_2(t-1)}+1$ group elements.
+
+% - Q: Are our proofs $O(\log{t})$ or $O(\log{n})$?
+% - A: $\mathsf{floor}(\log_2{(t-1)}) + 1$
+%    + We only start dividing by accumulators of deg $< t$
+%    - Each time we divide, the next level has an accumulator of deg $t/2$ and a remainder of deg $< t-1$
+%    - $\log_2{(t-1)}$ makes sense because the accumulators from the leaves to the roots have degree $1, 2, 4, \dots, n$, at some point reaching a maximum degree $2^k \le t-1 \Leftrightarrow k \le \log_2{(t-1)}$
+%       + i.e., $k = \mathsf{floor}(\log_2(t-1))$
+%    - The exact proof size should be $k+1$, I think. For example, consider $t-1 = 2$ (or even 3). 
+%        - Then, the largest accumulator we'll "successfully" / "usefully" divide by will be deg $2^k = 2^1$. (Larger accumulators will give quotient 0 and remainder equal to the dividend.) 
+%        - Dividing by the acc of deg $2^1$ will give a remainder of deg $\le$ 1 and a non-zero quotient.
+%        - Another division will be needed at the level below, by an accumulator of deg 1.
+%        - Thus, the proof consists of these two quotients.
+%        - So its size is $k+1$.
+%    - So in the code, the proof size should be $1 + \mathsf{floor}(\log_2(t-1))$

@@ -1,0 +1,151 @@
+\subsection{Cryptographic Assumptions}
+\label{s:assumptions}
+
+Let $\poly(\cdot)$ denote any function upper-bounded by some univariate polynomial.
+
+\begin{definition}[Bilinear pairing parameters]
+\label{d:bilinear-pairing-parameters}
+Let $\mathcal{G}(\cdot)$ be a randomized polynomial algorithm with input a security parameter $\lambda$.
+% -- begin multiline --
+Then, $\langle \Group, \GT, p, g, e\rangle \leftarrow \mathcal{G}(1^\lambda)$ are called \textit{bilinear pairing parameters} if
+$\Group$ and $\GT$ are cyclic groups of prime order $p$ where discrete log is hard, 
+$\Group$ has generator $g$
+and if $e$ is a bilinear map, $e : \Group\times \Group \rightarrow \GT$ such that $\GT = \langle e(g,g) \rangle$.
+% -- end multiline --
+\end{definition}
+
+\begin{definition}[$\ell$-Strong Bilinear Diffie-Hellman (SBDH) Assumption]
+\label{d:q-sbdh}
+Given as input security parameter $1^\lambda$, bilinear pairing parameters $\langle \Group, \GT, p, g, e\rangle \leftarrow \mathcal{G}(1^\lambda)$,
+public parameters  $\mathsf{PP}_q(g;\tau)=\langle g, g^\tau, g^{\tau^2},\allowbreak \dots, g^{\tau^\ell}\rangle$ where $\ell = \poly(\lambda)$ and $\tau$ is chosen uniformly at random from $\Zp^*$, no probabilistic polynomial-time adversary can output a pair $\langle c, e(g,g)^\frac{1}{\tau+c}\rangle$ for some $c \in \Zp$, except with probability negligible in $\lambda$.
+\end{definition}
+
+
+\begin{definition}[$\ell$-Polynomial Diffie-Hellman (polyDH) Assumption]
+\label{d:poly-dh}
+Given as input security parameter $1^\lambda$, bilinear pairing parameters $\langle \Group, \GT, p, g, e\rangle \leftarrow \mathcal{G}(1^\lambda)$,
+public parameters $\mathsf{PP}_q(g;\tau)=\langle g, g^\tau, g^{\tau^2},\allowbreak \dots, g^{\tau^\ell}\rangle$ where $\ell = \poly(\lambda)$ and $\tau$ chosen uniformly at random from $\Zp^*$, no probabilistic polynomial-time adversary can output $(\phi(x), g^{\phi(\tau)}) \in \Zp[X]\times \Group$, such that $2^\lambda > \deg{\phi} > \ell$, except with probability negligible in $\lambda$.
+% Q: Why does KZG condition 2^\lambda > \deg{\phi}? Could a PPT adversary ever output such a polynomial?
+% A: I guess it could, depending on the format, because such a polynomial could have lots of zero coefficients which don't need to be outputted.
+\end{definition}
+
+\subsection{AMT Proofs are Computationally Hiding and Binding}
+\label{s:proofs}
+Recall from ~\cite{polycommit} that a polynomial commitment scheme consists of six algorithms: \polysetup, \polycommit, \polyopen, \polyverifypoly, \polycreatewitness, \polyverifyeval.
+We show our modified KZG scheme with AMT proofs satisfies \textit{computational hiding} (see \cref{d:polycommit:comp-hiding}) under the discrete log (DL) assumption and \textit{evaluation binding} (see \cref{d:polycommit:eval-binding}) under the $\ell$-Strong Bilinear Diffie-Hellman ($\ell$-SBDH) assumption.
+These properties were originally defined in \cite{polycommit}.
+We prove these properties hold for a more general scheme that builds AMTs for an arbitrary set $X$ of $n$ points (rather than just for the set of roots of unity).
+For this scheme, \polysetup returns not only $\ell$-SDH public parameters, but also the accumulator commitments necessary to verify AMT proofs.
+In other words, given an evaluation point $x^{*} \in X$, verifiers have access to accumulators $\{g^{a_w(\tau)}\}_{w\in\treepath(x^{*})}$ necessary to verify $x^{*}$'s AMT proof.
+%(Recall that accumulators of degree $>\deg{\phi}$ can be discarded; see \cref{s:amt:public-parameters}.)
+
+%We use Kate et al.'s definition of polynomial commitments~\cite{polycommit}.
+
+%\api \polysetup$(\lambda, \ell)\rightarrow \pp$.
+%\api \polycommit$(\pp, \phi)\rightarrow c, d$.
+%\api \polyopen$(\pp, c, \phi, d)\rightarrow \phi$.
+%\api \polycreatewitness$(\pp, \phi,i,d)\rightarrow \phi(i), \pi$.
+%\api \polyverifyeval$(\pp, c, i, v, \pi)\rightarrow \{T,F\}$.
+
+% Note: KZG10a, KZG10eprint and Kate2010 do not include an upper bound in their definitions
+\begin{definition}[Evaluation binding]
+\label{d:polycommit:eval-binding}
+$\exists$ negligible function $\negl(\cdot)$, $\forall$ security parameters $\lambda$, $\forall \ell > 0,\forall$ adversaries ${\Adv}$:
+\begin{align*}
+%\small
+\Pr \left[ \begin{array}{c}
+    \pp \leftarrow \polysetup(1^\lambda, \ell),\\
+    (c, x_0, \phi(x_0), \pi, \phi'(x_0), \pi') \leftarrow {\Adv}(\pp):\\
+    \polyverifyeval(\pp,c,x_0,\phi(x_0), \pi) = 1 \wedge {}\\
+    \polyverifyeval(\pp,c,x_0,\phi'(x_0), \pi') = 1 \wedge {}\\
+    \phi(x_0) \ne \phi'(x_0)
+\end{array} \right] = \negl(\lambda)
+\end{align*}
+\end{definition}
+
+% Q: Hm, but I couldn't prove hiding against a (stronger or weaker?) adversary who only gets d-1 points and still outputs an unqueried index?
+% A: Well, then it's information theoretic: there are infinitely many polynomials of degree d that pass through (d-1)+1 points. (Well, not in \Fp[X], but you get the point.)
+% Note: KZG10a, KZG10eprint and Kate2010 do not include size of public params in their definitions
+% TODO: Is the fact that we're restricting params to be of size $d$ problematic?
+\begin{definition}[Computational hiding]
+\label{d:polycommit:comp-hiding}
+Given $\pp$ randomly generated via $\polysetup(1^\lambda, d)$, $c\in \Group$, $\phi \in_R \Fp[X]$ of degree $d$ and $(x_i, \phi(x_i), \pi_i)_{i=1}^d$ for distinct $x_i$'s such that \polyverifyeval$(\pp, c, x_i, \phi(x_i), \pi_i) = 1, \forall i\in[d]$, no adversary $\Adv$ can output $\phi(\hat{x})$ for any $\hat{x}$ where $\hat{x} \ne x_i, \forall i\in[d]$, except with probability negligible in the security parameter $\lambda$.
+\end{definition}
+
+% TODO: We are not accounting for the effect of 'batch proofs' used during complaint broadcasting on 'hiding.' Neither is KZG10.
+
+% Note: Hiding definition must be w.r.t. fixed $\phi$. Otherwise, we can't possibly talk about $\phi(x*)$.
+% Keep in mind that $\AdvB$ actually fixes a $\phi$; he just doesn't know it.
+% When adversary outputs a $\phi(x*)$, it's w.r.t. this fixed $\phi$ and \AdvB can test it by interpolating in the exponent. 
+\parhead{Computational hiding proof.}
+Suppose there exists an adversary \Adv that breaks computational hiding and outputs $\phi(\hat{x})$ for an unqueried $\hat{x}\ne x_i, \forall i\in[d]$.
+Then, we show how to build an adversary \AdvB that takes as input a random discrete log instance $(g, g^a)$ and uses \Adv to break it and output $a$.
+(Our proof is in the same style as Kate et al.'s proof for $\mathsf{PolyCommit}_\mathsf{DL}$'s computational hiding~\cite{KZG10b}.)
+
+\AdvB runs $\polysetup(1^\lambda, d)$ which picks $\tau\in_R \Fp$ and outputs public parameters $\pp=\PP_d(g;\tau)$.
+Importantly, since \AdvB runs the setup he will know the trapdoor $\tau$.
+Then, \AdvB picks random points $(x_i, y_i) \in X\times \Fp, \forall i\in[0,d]$ with distinct $x_i$'s, except he sets $y_0 = a$.
+(Since \AdvB does not know $a$, he just sets $g^{y_0}=g^a$.)
+Note that $(x_i, y_i)_{i=0}^d$ determines a degree $d$ polynomial $\phi$ where $\phi(x_i) = y_i,\forall i\in[0,d]$.
+Since $\AdvB$ does not know $a$ (only $g^a$), it will interpolate $\phi$'s commitment $g^{\phi(\tau)}$ ``in the exponent'' as:
+$$g^{\phi(\tau)} = \prod_{i\in [0,d]} (g^{y_i})^{\Ell_i^{T}(\tau)}$$
+Here $T=\{x_i\}_{i\in [0,d]}$ and recall that $\Ell_i^T(\tau)=\prod_{j\in T, j\ne i} (\tau-x_j)/(x_i-x_j)$ (see \cref{s:prelim:fft}).
+To summarize, \AdvB ``embeds'' the $(g,g^a)$ challenge in an (unknown-to-$\AdvB$-but-determined) polynomial $\phi$ with commitment $c=g^{\phi(\tau)}$.
+
+Next, \AdvB has to simulate AMT proofs $\pi_i$ for $y_i = \phi(x_i), \forall i\in[d]$.
+To do this, recall that at each node $w$ in the AMT, we have quotient and remainder polynomials $q_w,r_w$ such that $r_{\parent(w)} = q_w a_w + r_w$ (see \cref{f:multipoint-eval}).
+Also, recall that \AdvB knows $\tau$ so he can compute accumulator evaluations $a_w(\tau), \forall$ nodes $w$ in the AMT.
+Now, \AdvB can simulate proofs as follows.
+
+For the root node $w = \varepsilon$, we have $r_{\parent(\varepsilon)} = \phi$, so \AdvB picks a random $r_\varepsilon(\tau)\in \Fp$, and computes the root quotient commitment as $g^{q_\varepsilon(\tau)}=(g^{\phi(\tau)}/g^{r_\varepsilon(\tau)})^{\frac{1}{a_\varepsilon(\tau)}}$.
+At the next level, consider the children nodes $u$ and $v$ of the root $\varepsilon$.
+For each child $w\in\{u,v\}$, \AdvB must commit to a quotient $q_w$ that satisfies $r_\varepsilon(\tau)=q_w(\tau) a_w(\tau) + r_w(\tau)$ for some $r_w$.
+So \AdvB proceeds similarly: for each child $w\in\{u,v\}$, he picks a random $r_w(\tau)$ and computes a commitment $g^{q_w(\tau)}=(g^{r_\varepsilon(\tau)}/g^{r_w(\tau)})^{\frac{1}{a_w(\tau)}}$.
+\AdvB will do this recursively until it reaches leaf nodes in the AMT.
+For each leaf $l$, instead of picking $r_l(\tau)$ randomly, \AdvB will set it to the $y_i$ corresponding to that leaf.
+This way, \AdvB can simulate quotient commitments $\{g^{q_w(\tau)}\}_{w\in \treepath(x_i)}$ for all $i\in[d]$ that pass the AMT proof verification in \cref{eq:amt-verify}.
+
+Next, \AdvB calls \Adv with $(\pp, c, (x_i, y_i, \pi_i)_{i=1}^d)$ as input, hoping that \Adv outputs another point $\hat{x}$ and its evaluation $\phi(\hat{x})$.
+% It could be that \hat{x} = x_0, but in that case A trivially breaks the DL instance, so we're good.
+Since \Adv breaks computational hiding, this happens with non-negligible probability.
+(Note that \AdvB can check \Adv succeeds by interpolating $g^{\phi(\hat{x})}$ ``in the exponent''.)
+When \Adv succeeds, if $\hat{x}=x_0$, then $a = \phi(\hat{x})$, so \AdvB breaks discrete log on $(g,g^a)$.
+Otherwise, \AdvB uses the first $d$ points $(x_i, y_i=\phi(x_i))_{i\in [d]}$ and this new distinct $(\hat{x},\phi(\hat{x}))$ point to interpolate $\phi$ and as a result obtain $a = \phi(x_0)$.
+(Recall that, by \cref{d:polycommit:comp-hiding}, we have $\hat{x}\ne x_i,\forall i\in[d]$.)
+As a result, \AdvB breaks discrete log on $(g,g^a)$.
+
+\parhead{Evaluation binding proof.}
+Suppose there exists an adversary \Adv that outputs a commitment $c$, with two contradicting proofs $\pi, \pi'$ attesting that $\phi(k)$ is equal to $v$ and $v'$, respectively.
+We show how to build another adversary \AdvB that breaks $q$-SBDH.
+First, \AdvB runs \Adv to get $(c, \pi, \pi', \phi(k), v, v')$.
+Let $W=\treepath(k)$ denote the nodes along $k$'s path in the AMT.
+Let $(\pi_i)_{i\in W}$ denote the quotient commitments in $\pi$.
+Similarly, let $(\pi'_i)_{i\in W}$ denote the quotient commitments in $\pi'$.
+Since both proofs verify, we have:
+\begin{align*}
+e(c, g) &= e(g^{v}, g) \prod_{i\in W} {e(\pi_i, g^{a_i(\tau)})}\\
+e(c, g) &= e(g^{v'}, g) \prod_{i \in W} {e(\pi'_i, g^{a_i(\tau)})}
+\end{align*}
+Dividing the first equation by the second, we get:
+\begin{align*}
+% because the two equations above have the same LHS
+%e(g^{v}, g) \prod_{i \in W} {e(\pi_i, g^{a_i(\tau)})} &= e(g^{v'}, g) \prod_{i \in W} {e(\pi'_i, g^{a_i(\tau)})}\Leftrightarrow\\
+1_{\Group_T} &= \frac{e(g^{v}, g)}{e(g^{v'}, g)} \frac{\prod_{i \in W} {e(\pi_i, g^{a_i(\tau)})}} {\prod_{i \in W} {e(\pi'_i, g^{a_i(\tau)})}}\Leftrightarrow\\
+1_{\Group_T} &= {e(g^{v-v'}, g)} \prod_{i \in W} \frac{e(\pi_i, g^{a_i(\tau)})}{e(\pi'_i, g^{a_i(\tau)})} \Leftrightarrow\\
+% divide by e(g^v', g) and by \prod_i e(\pi_i, g^{a_i(\tau)}) + bilinear properties
+e(g^{v'-v}, g) &= \prod_{i \in W} e(\pi_i / \pi'_i, g^{a_i(\tau)})
+\end{align*}
+Now, recall that one of the accumulators $(a_i(x))_{i\in W}$ is the monomial $(x - k)$, and all the other $a_i(x)$'s contain $(x-k)$ as a term, which means it can be factored out of them.
+Thus, since $(x-k)$ perfectly divides all $a_i(x)$'s, let $r_i(x) = a_i(x) / (x-k), \forall i\in W$.
+Importantly, the adversary \AdvB can compute all $r_i(x)$'s in polynomial time, since it can reconstruct all the accumulator polynomials $(a_i(x))_{i\in W}$.
+As a result, \AdvB can compute all commitments $(g^{r_i(\tau)})_{i \in W}$.
+Then, \AdvB breaks $\ell$-SBDH as follows:
+\begin{align*}
+e(g^{v'-v}, g) &= \prod_{i\in W} {e(\pi_i / \pi'_i, g^{r_i(\tau)(\tau-k)})}\\
+% because bilinear properties
+e(g^{v'-v}, g) &= \prod_{i\in W} {e(\pi_i / \pi'_i, g^{r_i(\tau)})^{(\tau-k)}}\\
+% because a1^x a2^x a3^x ... an^x = (a1 a2 ... an)^x
+e(g^{v'-v}, g) &= \left[\prod_{i\in W} {e(\pi_i / \pi'_i, g^{r_i(\tau)})}\right]^{(\tau-k)}\\
+% exponentiate by 1/(\tau-k) and by 1/(v-v')
+e(g, g)^{\frac{1}{\tau-k}} &= \left[\prod_{i\in W} {e(\pi_i / \pi'_i, g^{r_i(\tau)})}\right]^{\frac{1}{v'-v}}
+\end{align*}

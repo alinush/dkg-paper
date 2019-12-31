@@ -1,0 +1,69 @@
+\subsection{Scalable Distributed Key Generation}
+\label{s:scalable-dkg}
+
+In this section, we scale $(t,n)$ DKG protocols to large $n$ in the difficult case when $t > n/2$.
+We start from \ejfdkg, where each player acts as an \evss dealer (see \cref{alg:dkg}), taking $\Theta(nt)$ time to compute $n$ KZG evaluation proofs and $\Theta(t)$ time to compute one KZG proof for $g^{f_i(0)}$ (see \cref{alg:dkg}).
+We simply replace \evss with \ourvss in \ejfdkg, obtaining a new protocol we call \ourdkg with smaller $\Theta(n\log{t})$ per-player dealing time.
+%As in \ourvss, the players' shares are evaluations at the roots of unity rather than $\{1,2,\dots,n\}$.
+Importantly, we keep the same KZG proof for $g^{f_i(0)}$.
+
+Compared to \ejfdkg, \ourdkg has slightly larger communication (see \cref{s:eval:dkg:communication}), larger proof verification times and a slower complaint round (see \cref{t:vss-comparison}).
+Fortunately, when using KZG batch proofs (see \cref{s:scalable-vss:batch-complaints}), the complaint round can be made more efficient in both \ejfdkg and \ourdkg.
+Furthermore, we show \ourdkg players can verify their shares much faster under certain conditions (see \cref{s:scalable-dkg:share-verif}).
+Finally, in \cref{s:eval:dkg}, we show that our smaller dealing time more than makes up for these increases.
+
+\subsubsection{Homomorphic AMT proofs}
+\label{s:scalable-dkg:homomorphic-amt}
+At the end of \ejfdkg's sharing phase, each player must aggregate all his shares, commitments and KZG proofs from the set of qualified players into a final share, commitment and proof (see \cref{alg:dkg}).
+But for this to work in \ourdkg, AMT proofs must be \textit{homomorphic}: $\forall a\in\Fp$, a proof for $f_1(a)$ and a proof for $f_2(a)$ must be \textit{aggregated} into a proof for $(f_1+f_2)(a)$.
+
+The key observation is that ``adding up'' the multipoint evaluation trees of two polynomials $\phi$ and $\rho$ at the same points (i.e., at $X=\{\omega_N^{j-1}\}_{j\in[n]}$) results in a multipoint evaluation tree of their sum $\phi+\rho$ (also at $X$).
+%(The evaluations have to be at the same set of points, say, $\{1,2,\dots,n\}$.)
+In more detail, let $q_{w, [\psi]}$ denote the quotient polynomial at node $w$ in $\psi$'s multipoint evaluation tree (at $X$).
+Then, one can show that $q_{w,[\phi+\rho]} = q_{w,[\phi]} + q_{w,[\rho]}$ and that $g^{q_{w,[\phi+\rho]}(\tau)} = g^{q_{w,[\phi]}(\tau) + q_{w,[\rho]}(\tau)} = g^{q_{w,[\phi]}(\tau)} g^{q_{w,[\rho]}(\tau)}$.
+In other words, given an AMT for $\phi$ and an AMT for $\rho$, we can obtain an AMT for $\phi+\rho$ by combining quotient commitments at each node via multiplication.
+It follows that a proof for $f_1(a)$ and one for $f_2(a)$ can be aggregated into a proof for $(f_1+f_2)(a)$ by combining commitments at each node.
+%Next, we use this homomorphism to speed up the verification round.
+
+\subsubsection{Fast-track verification round}
+\label{s:scalable-dkg:share-verif}
+During the verification round, each player $j$ must receive and verify shares from all players $i\in[n]$, including himself (see \cref{alg:dkg}).
+% $n$ shares with evaluation proofs and $n$ $g^{f_i(0)}$'s with evaluation proofs and NIZKPoKs from all other players (including from $j$ himself).
+Specifically, each player $i$ gives $j$: (I) a KZG commitment $c_i$ of $i$'s polynomial $f_i$, (II) a share $s_{i,j}=f_i(\omega_N^{j-1})$ with an AMT proof $\pi_{i,j}$ and (III) $g^{f_i(0)}$ with a NIZKPoK and KZG proof.
+Next, player $j$ must verify each $s_{i,j}$ and $g^{f_i(0)}$ against their $c_i$.
+With \textit{naive verification}, this takes $\Theta(n\log{t})$ pairings for all $s_{i,j}$'s (since $\pi_{i,j}$'s are AMT proofs), and $\Theta(n)$ pairings for the $g^{f_i(0)}$'s.
+We show how \textit{batch verification} can do this faster, with anywhere from $\Theta(\log{t})$ to $\Theta(n\log{t})$ pairings, depending on the number of valid shares.
+(We will not address the $\Theta(n)$ work required to verify all NIZKPoKs.)
+
+First, consider the \textit{best case} when all $s_{i,j}$'s are valid.
+% Note: It is not true that if s_j verifies then all shares are valid.
+% Counterexample: s_1 with \pi_2 proof and s_2 with \pi_1 proof; they don't verify individually, but they verify in aggregate.
+The key idea is player $j$ will verify just one \textit{aggregated} share $s_j = \sum_{i=1}^n s_{i,j}$ against an aggregated commitment $c_\mathsf{all}=\prod_{i=1}^n c_i$ and aggregated proof $\pi_j$ from all $\pi_{i,j}$'s (as explained in \cref{s:scalable-dkg:homomorphic-amt}).
+(We ignore the $g^{f_i(0)}$'s for now.)
+This takes $\Theta(n\log{t})$ aggregation work but only takes $\Theta(\log{t})$ pairings.
+If successful, $j$ has a valid share $s_j$ on $f_\mathsf{all} = \sum_{i=1}^n f_i$.
+The same aggregation can be done on the $g^{f_i(0)}$'s and their KZG proofs.
+This way, the number of pairings is reduced significantly to $\Theta(\log{t})$ for the shares and $\Theta(1)$ for the $g^{f_i(0)}$'s.
+(Again, $j$ still does $\Theta(n)$ work to verify the NIZKPoKs individually, which we will not address.)
+
+Since players can be malicious, let us consider an \textit{average case} when a small number of $b$ shares are bad.
+In this case, $j$ can identify the $b$ shares faster via \textit{batch verification}~\cite{Boldyreva2003Threshold}.
+Specifically, $j$ starts with the shares, proofs and commitments as leaves of a binary tree, where every node aggregates its subtree's shares, proofs and commitments.
+As a result, the root will contain $(c_\mathsf{all},s_j,\pi_j)$.
+If verification of the root fails, $j$ proceeds recursively down the tree.
+Whenever a node verifies, shares in its subtree will no longer be checked individually, saving work for $j$.
+In this fashion, $j$ only computes $\Theta(b\log{t})$ pairings if $\le b$ shares are bad.
+
+Unfortunately, in the \textit{worst case} (i.e., $t-1$ bad shares), batch verification computes $\approx(2n-1)\log{t}$ pairings, which is slower than the $\approx n\log{t}$ pairings when done naively.
+Thus, as pointed out by previous work~\cite{LM07}, $j$ should abort and verify naively after too many nodes fail verification.
+To summarize, $j$ can compute fewer pairings by batch-verifying optimistically to see if he is in the best or average case and downgrading to naive verification otherwise.
+We stress that $j$ still does $\Theta(n\log{t})$ work to build the tree and $\Theta(n)$ work to verify all NIZKPoKs, but fewer (expensive) pairings are computed.
+
+\subsubsection{Optimistic reconstruction}
+\label{s:scalable-dkg:reconstr}
+
+DKG protocols have the advantage that $g^s$ must be exposed to all players and the reconstructor.
+Thus, the reconstructor can optimistically interpolate $s$ from any $t$ shares (without verifying them) and check the result against $g^s$.
+In the best case, when all or most shares are valid, this will recover the correct $s$ very fast (see \cref{s:eval:dkg:reconstr}).
+(Note that \ourvss and \evss do not expose $g^s$ but they could be easily modified to do so and speed up the reconstruction in the best case, at a very small increase in dealing time.)
+In the worst case, \ourdkg's reconstruction time is the same as \ourvss's (see \cref{s:scalable-vss:reconstruction}).

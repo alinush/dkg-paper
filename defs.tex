@@ -1,0 +1,121 @@
+\newif\ifCameraReady
+\CameraReadytrue % uncomment for camera-ready
+
+%
+% Some colors:
+%  Blue: #268bd2
+%  (Grey) Blue: #657b83
+%  Green: #859900
+%  (Dark) Orange: #cb4b16
+%  Red: #dc322f
+%  Periwinkle: #6c71c4
+%  Pink: #d33682
+%  Teal: #2aa198
+%  Yellow: #b58900
+%
+\definecolor{myBlueColor}{HTML}{268BD2}
+\definecolor{myYellowColor}{HTML}{B58900}
+\definecolor{myGreenColor}{HTML}{859900}
+\definecolor{myRedColor}{HTML}{DC322F}
+\newcommand{\myblue}[1]{\textcolor{myBlueColor}{#1}}
+\newcommand{\myred}[1]{\textcolor{myRedColor}{#1}}
+\newcommand{\myyellow}[1]{\textcolor{myYellowColor}{#1}}
+\newcommand{\mygreen}[1]{\textcolor{myGreenColor}{#1}}
+
+%
+% Names for our schemes
+%
+\newcommand{\jfdkg}{\ensuremath{\mathsf{JF}}-\ensuremath{\mathsf{DKG}}\xspace}   % Gennaro et al. abstraction for Pedersen's DKG
+\newcommand{\newdkg}{\ensuremath{\mathsf{New}}-\ensuremath{\mathsf{DKG}}\xspace} % Gennaro et al. DKG with Pedersen commitments and Feldman-verification for reconstruction of g^{z_i}'s
+\newcommand{\ejfdkg}{\ensuremath{\mathsf{eJF}}-\ensuremath{\mathsf{DKG}}\xspace} % Kate's DKG with PolyCommit
+\newcommand{\ourdkg}{\ensuremath{\mathsf{AMT}} \ensuremath{\mathsf{DKG}}\xspace}  % Our DKG protocol
+
+\newcommand{\evss}{\ensuremath{\mathsf{eVSS}}\xspace}
+\newcommand{\ourvss}{\ensuremath{\mathsf{AMT}} \ensuremath{\mathsf{VSS}}\xspace}
+
+% WARNING: Used both as the AMT VSS/DKG dealer complexity and as the time to compute a multipoint evaluation.
+% Indeed, this is faster than FFT, unless I mis-estimated the asymptotic complexity.
+\newcommand{\amtDealTime}{\ensuremath{\Theta(n\log{t})}\xspace}
+\newcommand{\amtOneShareVerifTime}{\ensuremath{\Theta(\log{t})}\xspace}
+% WARNING: Used both as the time to verify all shares, as the # of pairings computed during verification and as the communication complexity required to send all shares.
+\newcommand{\amtAllShareVerifTime}{\ensuremath{\Theta(n\log{t})}\xspace}
+\newcommand{\evssReconstructTimeBc}{\ensuremath{\Theta(t\log^2{t})}\xspace}
+\newcommand{\evssReconstructTimeWc}{\ensuremath{\Theta(t\log^2{t})+n}\xspace}
+\newcommand{\amtReconstructTimeBc}{\ensuremath{\Theta(t\log^2{t})}\xspace}
+\newcommand{\amtReconstructTimeWc}{\ensuremath{\Theta(t\log^2{t} + n\log{t})}\xspace}
+\newcommand{\amtDkgTotalTime}{\ensuremath{\Theta(n^2\log{t})}\xspace}
+% Proof size for AMT on poly of deg t-1 evaluated at n > t points is 1 + \log2floor(t-1)
+\newcommand{\amtProofSize}[1]{\ensuremath{\floor{\log{(#1-1)}} + 1}\xspace}
+\newcommand{\amtProofSizeF}{\ensuremath{\floor{\log{f}} + 1}\xspace}
+
+%
+% Some colors
+%
+\definecolor{myblue}{HTML}{268BD2}
+\definecolor{mygreen}{HTML}{859900}
+\definecolor{myred}{HTML}{DC322F}
+
+%
+% Markup defs
+%
+\newcommand{\parhead}[1]{\smallskip\noindent{\bfseries\boldmath\ignorespaces{#1}}}
+%\newcommand{\xmark}{\ding{55}}
+\newcommand{\api}{\hangindent=\parindent \hangafter=1 \noindent}
+
+%
+% Math things
+%
+\DeclareMathOperator{\Ima}{Im}	% image of a function
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\mat}[1]{\bm{#1}}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\Group}{\mathbb{G}}
+\newcommand{\Fp}{\mathbb{F}_p}
+\newcommand{\GT}{\mathbb{G}_T}
+\newcommand{\Zp}{\mathbb{Z}_p}
+\newcommand{\poly}{\mathsf{poly}}
+\newcommand{\negl}{\mathsf{negl}}
+\newcommand{\nonnegl}{\eta}
+\newcommand{\bezout}{B\'ezout\xspace}
+\newcommand{\Ell}{\mathcal{L}}
+\newcommand{\Adv}{\ensuremath{\mathcal{A}}\xspace} % adversary
+\newcommand{\AdvB}{\ensuremath{\mathcal{B}}\xspace} % adversary
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+
+%
+% Polynomial APIs
+%
+\newcommand{\vk}{\ensuremath{\mathsf{VK}}\xspace}
+\newcommand{\PP}{\ensuremath{\mathsf{PP}}\xspace}
+\newcommand{\pp}{\ensuremath{\mathsf{pp}}\xspace}
+\newcommand{\nizkpok}{\ensuremath{\pi^\mathsf{DLog}}\xspace}
+\newcommand{\kzgbatchproof}{\ensuremath{\pi^\mathsf{batch}}\xspace}
+\newcommand{\polysetup}{\ensuremath{\mathsf{Setup}}\xspace}
+\newcommand{\polycommit}{\ensuremath{\mathsf{Commit}}}
+\newcommand{\polyopen}{\ensuremath{\mathsf{Open}}}
+\newcommand{\polyverifypoly}{\ensuremath{\mathsf{VerifyPoly}}}
+\newcommand{\polycreatecommwitness}{\ensuremath{\mathsf{CreateCommWitness}}}
+\newcommand{\polycreatewitness}{\ensuremath{\mathsf{CreateWitness}}\xspace}
+\newcommand{\polyverifyeval}{\ensuremath{\mathsf{VerifyEval{\xspace}}}}
+\newcommand{\polyverifycommittedeval}{\ensuremath{\mathsf{VerifyCommEval}}}
+\newcommand{\polycombinecomms}{\ensuremath{\mathsf{CombineComms}}}
+
+% 
+% Notations for trees and forests
+%
+\newcommand{\parent}{\ensuremath{\mathsf{parent}}}
+\newcommand{\treepath}{\ensuremath{\mathsf{path}}}
+
+%
+% Markups for to do's and notes
+%
+%\newcommand{\todo}[1]{\noindent\textcolor{red}{\textbf{(}\textsc{\textbf{{TODO: }}}}#1\textcolor{red}{\textbf{)}}}
+%\newcommand{\authnote}[2]{{\textcolor{red}{{#1: }\textcolor{blue}{ #2}}}}
+\mathchardef\mhyphen="2D % Hyphens in math mode: https://www.logic.at/staff/salzer/etc/mhyphen/

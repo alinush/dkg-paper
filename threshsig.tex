@@ -1,0 +1,69 @@
+\section{Scalable Threshold Cryptosystems}
+First, we show how to speed up and scale threshold signature aggregation as well as secret reconstruction in any Lagrange-based threshold cryptosystem (see \cref{s:threshsig}).
+Then, we introduce \textit{authenticated multipoint evaluation trees} (AMTs), a new technique for precomputing logarithmic-sized evaluation proofs much faster in KZG commitments (see \cref{s:amt}).
+Last, we use AMTs to speed up and scale Kate et al.'s \evss and Kate's \ejfdkg (see \cref{s:scalable-vss,s:scalable-dkg}).
+
+\subsection{Scalable Threshold Signatures}
+\label{s:threshsig}
+In this section, we show how to reduce the time to aggregate a $(t,n)$ BLS threshold signature from $\Theta(t^2)$ to $\Theta(t\log^2{t})$.
+Although we focus on BLS, our techniques can be used in any threshold cryptosystem (not just signatures) whose secret key lies in a prime-order field $\Fp$.
+% Note: Must \Fp have roots of unity? No, can use other multiplication / division algorithms, but in practice, roots of unity are preferred.
+This includes ElGamal signatures~\cite{Harn1994GroupOriented,Park96NewElGamal,Gennaro1996Robust}, ElGamal encryption~\cite{DesmedtFrankel1990Threshold}, Schnorr signatures~\cite{threshold-schnorr,Gennaro2003SecureApplications} (but not RSA-based schemes, whose secret key does not lie in a prime-order field~\cite{Shoup2000Practical}).
+
+Recall from \cref{s:prelim:threshsig} that BLS TSS aggregation has two phases: (1) computing Lagrange coefficients and (2) exponentiating signature shares by these coefficients.
+Unfortunately, as $t$ gets large, naively computing Lagrange coefficients in $\Theta(t^2)$ time dominates exponentiating the shares (see \cref{f:thresh}).
+In fact, current descriptions and implementations of threshold schemes all seem to use this inefficient scheme, which we dub \textit{naive Lagrange}~\cite{bls-chia-impl,bls-dfinity-impl,bls-herumi-impl,bls-sbft-impl,Boldyreva2003Threshold}.
+We make three contributions.
+First, we adapt the \textit{fast polynomial interpolation} from \cite{moderncomputeralgebra-ch10} to compute just the Lagrange coefficients $\Ell_i^T(0)$ fast in $\Theta(t\log^2{t})$ time.
+We call this scheme \textit{fast Lagrange}.
+Second, we speed up this scheme by using roots of unity rather than $\{1,2,\dots, n\}$ as the signer IDs.
+Third, we implement a BLS TSS based on fast Lagrange and show it outperforms the naive one as early as $n=\blsOutperformN$ (see \cref{s:eval:threshsig}).
+
+\subsubsection{Fast Lagrange-based BLS}
+\label{s:threshsig:fast-lagr}
+Recall from \cref{s:prelim:fft} that a \textit{Lagrange polynomial} $\Ell_i^T(x)$ is defined as $\Ell_i^T(x) = \prod_{\substack{j\in T\\j\ne i}}\frac{x-j}{i-j}$.
+Let us define $N(x) = \prod_{i\in T}{(x-i)}$.
+Then, let $N_i(x) = \frac{N(x)}{x-i} = \prod_{j\in T,j\ne i} {(x-j)}$ be the numerator and let $D_i = N_i(i) = \prod_{j\in T,j\ne i} {(i - j)}$ be the denominator.
+Now, we can rewrite $\Ell_i^T(x) = \frac{N_i(x)}{D_i}$.
+
+Our goal is to quickly compute $\Ell_i^T(0)$ for each signer ID $i\in T$.
+In other words, we need to quickly compute all $N_i(0)$'s and all $D_i$'s.
+First, given the set of signer IDs $T$, we interpolate $N(x)$ in $\Theta(t\log^2{t})$ time by starting with the $(x-i)$'s as leaves of a tree and ``multiplying up the tree.''
+% i.e., just like computing the accumulators in the multipoint evaluation by starting with the (x-i)'s as leaves of a tree and "multiplying up"
+Second, we can compute all $N_i(0) = N(0) / (-i)$ in $\Theta(t)$ time.
+(Note that $N(0)$ is just the first coefficient of $N(x)$.)
+However, computing $D_i,\forall i\in T$ appears to require $\Theta(t^2)$ time.
+Fortunately, the \textit{derivative} $N'(x)$ of $N(x)$ evaluated at $i$ is exactly equal to $D_i$~\cite{moderncomputeralgebra-ch10}.
+Thus, an $\Theta(t\log^2{t})$ multipoint evaluation of $N'(x)$ at all $i\in T$ can efficiently compute all $D_i$'s!
+
+To see why $N'(i) = D_i$, it is useful to look at the closed form formula for $N'(x)$ obtained by applying the product rule of differentiation (i.e., $(fg)' = f'g + fg'$).
+For example, for $N(x) = (x-1)(x-2)(x-3)$:
+\begin{align*}
+N'(x)
+%&= \big[(x-1)(x-2)\big]'(x-3) + \big[(x-1)(x-2)\big](x-3)'\\
+%&= \big[(x-1)'(x-2) + (x-1)(x-2)'\big](x-3) + (x-1)(x-2)\\
+%&= \big[(x-2)+(x-1)\big](x-3) + (x-1)(x-2)\\
+&= (x-2)(x-3) + (x-1)(x-3) + (x-1)(x-2)\\
+&= N_1(x) + N_2(x) + N_3(x)
+\end{align*}
+In general, we can prove that $N'(x) = \sum_{i\in T} N_i(x)$, where $\deg{N'} = t-1$.
+Since $N_j(i) = 0$ for all $i\ne j$, it follows that $N'(i) = N_i(i) + 0 = D_i$.
+Lastly, computing $N'(x)$ only takes $\Theta(t)$ time via polynomial differentiation.
+(i.e., $N = (c_t, c_{t-1}, \dots, c_1, c_0) \Rightarrow N' = (t \cdot c_t, (t-1) c_{t-1}, \dots, 2  c_2, c_1)$)
+
+To summarize, given a set $T$ of signer IDs, we can compute the Lagrange coefficients $\Ell_i^T(0) = N_i(x) / N'(i)$ by (1) computing $N(x)$ in $\Theta(t\log^2{t})$ time, (2) computing all $N_i(0)$'s in $\Theta(t)$ time, (3) computing $N'(x)$ in $\Theta(t)$ time and (4) evaluating $N'(x)$ at all $i\in T$ in $\Theta(t\log^2{t})$ time.
+This reduces the time to compute all $\Ell_i^T(0)$'s from $\Theta(t^2)$ to $\Theta(t\log^2{t})$.
+
+\subsubsection{Further speed-ups via roots of unity}
+\label{s:threshsig:roots-of-unity}
+The fast Lagrange technique works for any threshold cryptosytem whose secret key $s$ lies in prime-order field $\Fp$.
+% I am silently assuming here that polynomials of degree-bound n can be multiplied in \Theta(n \log{n}) time in *any* field (even w/o roots of unity) via various tricks (see \cite{preparata-fft-ff}).
+However, for fields that support roots of unity, further speed-ups are possible.
+(A caveat is that pairings on the underlying elliptic curve can be up to 2$\times$ slower.)
+Without loss of generality, assume the total number of signers $n$ is a power of two and let $\omega_n$ denote a primitive $n$th root of unity in $\Fp$.
+If we replace the $\{1,\dots,n\}$ signer IDs with roots of unity $\{\omega_n^{i-1}\}_{i\in[n]}$, then $N'(x)$ can be evaluated at any subset of signer IDs with a single Fast Fourier Transform (FFT).
+This is much faster than a polynomial multipoint evaluation, which performs many polynomial divisions, each involving many FFTs.
+Our fast Lagrange implementation from \cref{s:eval:threshsig} takes advantage of this optimization.
+Furthermore, we use roots of unity to compute inverses faster in both our naive and fast Lagrange implementations (see \cref{s:eval:threshsig}).
+For example, in naive Lagrange, we compute $N(0)=\prod_{i\in T}(0-\omega_n^i)$ much faster as $(-1)^{|T|}\cdot \omega_n^{\sum_{i\in T} i}$.
+% Note: For both naive and fast Lagrange, we compute the numerators N(0)/(0-x_i) using properties of roots of unity for computing -\omega_n^k and for inverting \omega_n^k

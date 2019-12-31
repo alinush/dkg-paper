@@ -1,0 +1,506 @@
+%
+% Data for column 'avg_deal_usec'
+% (improvements must be better than 1.2 and occur after n > 16)
+%
+\newcommand{\ejfDkgDealTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{1.57 ms\xspace}
+        {7}{5.26 ms\xspace}
+        {15}{13.03 ms\xspace}
+        {31}{40.06 ms\xspace}
+        {63}{133.71 ms\xspace}
+        {127}{459.12 ms\xspace}
+        {255}{1.60 secs\xspace}
+        {511}{5.70 secs\xspace}
+        {1023}{20.61 secs\xspace}
+        {2047}{1.25 mins\xspace}
+        {4095}{4.75 mins\xspace}
+        {8191}{17.53 mins\xspace}
+        {16383}{1.16 hrs\xspace}
+        {32767}{4.63 hrs\xspace}
+        {65535}{16.64 hrs\xspace}
+        {131071}{2.43 days\xspace}
+        {262143}{8.49 days\xspace}
+        {524287}{29.72 days\xspace}
+        {1048575}{104.03 days\xspace}
+        {2097151}{364.10 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgDealTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{1.50 ms\xspace}
+        {7}{4.11 ms\xspace}
+        {15}{13.54 ms\xspace}
+        {31}{30.11 ms\xspace}
+        {63}{57.98 ms\xspace}
+        {127}{100.81 ms\xspace}
+        {255}{212.78 ms\xspace}
+        {511}{450.77 ms\xspace}
+        {1023}{937.16 ms\xspace}
+        {2047}{1.95 secs\xspace}
+        {4095}{4.04 secs\xspace}
+        {8191}{8.36 secs\xspace}
+        {16383}{17.18 secs\xspace}
+        {32767}{36.92 secs\xspace}
+        {65535}{1.20 mins\xspace}
+        {131071}{2.48 mins\xspace}
+        {262143}{5.03 mins\xspace}
+        {524287}{10.26 mins\xspace}
+        {1048575}{20.85 mins\xspace}
+        {2097151}{42.35 mins\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgDealTimeImprovOverejf}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{1.05\texttimes\xspace}
+        {7}{1.28\texttimes\xspace}
+        {15}{0.96\texttimes\xspace}
+        {31}{1.33\texttimes\xspace}
+        {63}{2.31\texttimes\xspace}
+        {127}{4.55\texttimes\xspace}
+        {255}{7.53\texttimes\xspace}
+        {511}{12.64\texttimes\xspace}
+        {1023}{21.99\texttimes\xspace}
+        {2047}{38.59\texttimes\xspace}
+        {4095}{70.69\texttimes\xspace}
+        {8191}{125.88\texttimes\xspace}
+        {16383}{242.8\texttimes\xspace}
+        {32767}{451.58\texttimes\xspace}
+        {65535}{829.46\texttimes\xspace}
+        {131071}{1410.93\texttimes\xspace}
+        {262143}{2430.51\texttimes\xspace}
+        {524287}{4173.49\texttimes\xspace}
+        {1048575}{7183.42\texttimes\xspace}
+        {2097151}{12379.09\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgDealTimeOutperformNejf}{31}
+
+
+%
+% Data for column 'avg_verify_best_case_usec'
+% (improvements must be better than 1.2 and occur after n > 3)
+%
+\newcommand{\ejfDkgVerifyBcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{4.99 ms\xspace}
+        {7}{6.92 ms\xspace}
+        {15}{10.88 ms\xspace}
+        {31}{18.84 ms\xspace}
+        {63}{35.01 ms\xspace}
+        {127}{66.51 ms\xspace}
+        {255}{128.56 ms\xspace}
+        {511}{254.13 ms\xspace}
+        {1023}{507.00 ms\xspace}
+        {2047}{1.01 secs\xspace}
+        {4095}{2.00 secs\xspace}
+        {8191}{4.00 secs\xspace}
+        {16383}{8.01 secs\xspace}
+        {32767}{16.41 secs\xspace}
+        {65535}{32.46 secs\xspace}
+        {131071}{1.09 mins\xspace}
+        {262143}{2.15 mins\xspace}
+        {524287}{4.32 mins\xspace}
+        {1048575}{8.52 mins\xspace}
+        {2097151}{17.84 mins\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgVerifyBcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{4.98 ms\xspace}
+        {7}{7.83 ms\xspace}
+        {15}{16.03 ms\xspace}
+        {31}{26.34 ms\xspace}
+        {63}{48.48 ms\xspace}
+        {127}{72.25 ms\xspace}
+        {255}{137.87 ms\xspace}
+        {511}{270.25 ms\xspace}
+        {1023}{519.82 ms\xspace}
+        {2047}{1.04 secs\xspace}
+        {4095}{2.07 secs\xspace}
+        {8191}{4.14 secs\xspace}
+        {16383}{8.15 secs\xspace}
+        {32767}{19.00 secs\xspace}
+        {65535}{32.96 secs\xspace}
+        {131071}{1.15 mins\xspace}
+        {262143}{2.26 mins\xspace}
+        {524287}{4.44 mins\xspace}
+        {1048575}{8.80 mins\xspace}
+        {2097151}{18.15 mins\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\ejfDkgVerifyBcTimeImprovOveramt}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{1.0\texttimes\xspace}
+        {7}{1.13\texttimes\xspace}
+        {15}{1.47\texttimes\xspace}
+        {31}{1.4\texttimes\xspace}
+        {63}{1.38\texttimes\xspace}
+        {127}{1.09\texttimes\xspace}
+        {255}{1.07\texttimes\xspace}
+        {511}{1.06\texttimes\xspace}
+        {1023}{1.03\texttimes\xspace}
+        {2047}{1.02\texttimes\xspace}
+        {4095}{1.04\texttimes\xspace}
+        {8191}{1.03\texttimes\xspace}
+        {16383}{1.02\texttimes\xspace}
+        {32767}{1.16\texttimes\xspace}
+        {65535}{1.02\texttimes\xspace}
+        {131071}{1.05\texttimes\xspace}
+        {262143}{1.05\texttimes\xspace}
+        {524287}{1.03\texttimes\xspace}
+        {1048575}{1.03\texttimes\xspace}
+        {2097151}{1.02\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\ejfDkgVerifyBcTimeOutperformNamt}{15}
+
+
+%
+% Data for column 'avg_verify_worst_case_usec'
+% (improvements must be better than 1.2 and occur after n > 3)
+%
+\newcommand{\ejfDkgVerifyWcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{8.92 ms\xspace}
+        {7}{26.63 ms\xspace}
+        {15}{62.59 ms\xspace}
+        {31}{134.61 ms\xspace}
+        {63}{277.07 ms\xspace}
+        {127}{559.60 ms\xspace}
+        {255}{1.13 secs\xspace}
+        {511}{2.26 secs\xspace}
+        {1023}{4.53 secs\xspace}
+        {2047}{9.08 secs\xspace}
+        {4095}{18.14 secs\xspace}
+        {8191}{36.34 secs\xspace}
+        {16383}{1.21 mins\xspace}
+        {32767}{2.49 mins\xspace}
+        {65535}{4.85 mins\xspace}
+        {131071}{9.74 mins\xspace}
+        {262143}{19.43 mins\xspace}
+        {524287}{38.82 mins\xspace}
+        {1048575}{1.30 hrs\xspace}
+        {2097151}{2.59 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgVerifyWcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{8.96 ms\xspace}
+        {7}{39.05 ms\xspace}
+        {15}{109.90 ms\xspace}
+        {31}{261.69 ms\xspace}
+        {63}{598.95 ms\xspace}
+        {127}{1.17 secs\xspace}
+        {255}{2.60 secs\xspace}
+        {511}{5.62 secs\xspace}
+        {1023}{12.19 secs\xspace}
+        {2047}{26.33 secs\xspace}
+        {4095}{56.44 secs\xspace}
+        {8191}{2.01 mins\xspace}
+        {16383}{4.27 mins\xspace}
+        {32767}{10.44 mins\xspace}
+        {65535}{19.15 mins\xspace}
+        {131071}{40.39 mins\xspace}
+        {262143}{1.42 hrs\xspace}
+        {524287}{2.96 hrs\xspace}
+        {1048575}{6.19 hrs\xspace}
+        {2097151}{12.92 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\ejfDkgVerifyWcTimeImprovOveramt}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{1.0\texttimes\xspace}
+        {7}{1.5\texttimes\xspace}
+        {15}{1.76\texttimes\xspace}
+        {31}{1.94\texttimes\xspace}
+        {63}{2.16\texttimes\xspace}
+        {127}{2.08\texttimes\xspace}
+        {255}{2.3\texttimes\xspace}
+        {511}{2.49\texttimes\xspace}
+        {1023}{2.69\texttimes\xspace}
+        {2047}{2.9\texttimes\xspace}
+        {4095}{3.11\texttimes\xspace}
+        {8191}{3.31\texttimes\xspace}
+        {16383}{3.53\texttimes\xspace}
+        {32767}{4.19\texttimes\xspace}
+        {65535}{3.95\texttimes\xspace}
+        {131071}{4.15\texttimes\xspace}
+        {262143}{4.37\texttimes\xspace}
+        {524287}{4.58\texttimes\xspace}
+        {1048575}{4.78\texttimes\xspace}
+        {2097151}{5\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\ejfDkgVerifyWcTimeOutperformNamt}{7}
+
+
+%
+% Data for column 'avg_reconstr_bc_usec'
+% (improvements must be better than 1.2 and occur after n > 3)
+%
+\newcommand{\ejfDkgReconstrBcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{252.00 mus\xspace}
+        {7}{258.00 mus\xspace}
+        {15}{278.00 mus\xspace}
+        {31}{323.00 mus\xspace}
+        {63}{454.00 mus\xspace}
+        {127}{910.00 mus\xspace}
+        {255}{1.65 ms\xspace}
+        {511}{3.23 ms\xspace}
+        {1023}{6.58 ms\xspace}
+        {2047}{13.59 ms\xspace}
+        {4095}{28.81 ms\xspace}
+        {8191}{60.01 ms\xspace}
+        {16383}{126.44 ms\xspace}
+        {32767}{266.55 ms\xspace}
+        {65535}{565.44 ms\xspace}
+        {131071}{1.21 secs\xspace}
+        {262143}{2.59 secs\xspace}
+        {524287}{5.64 secs\xspace}
+        {1048575}{11.78 secs\xspace}
+        {2097151}{24.71 secs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgReconstrBcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{252.00 mus\xspace}
+        {7}{258.00 mus\xspace}
+        {15}{278.00 mus\xspace}
+        {31}{323.00 mus\xspace}
+        {63}{454.00 mus\xspace}
+        {127}{910.00 mus\xspace}
+        {255}{1.65 ms\xspace}
+        {511}{3.23 ms\xspace}
+        {1023}{6.58 ms\xspace}
+        {2047}{13.59 ms\xspace}
+        {4095}{28.81 ms\xspace}
+        {8191}{60.01 ms\xspace}
+        {16383}{126.44 ms\xspace}
+        {32767}{266.55 ms\xspace}
+        {65535}{565.44 ms\xspace}
+        {131071}{1.21 secs\xspace}
+        {262143}{2.59 secs\xspace}
+        {524287}{5.64 secs\xspace}
+        {1048575}{11.78 secs\xspace}
+        {2097151}{24.71 secs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+%
+% Data for column 'avg_reconstr_wc_usec'
+% (improvements must be better than 1.2 and occur after n > 3)
+%
+\newcommand{\ejfDkgReconstrWcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{7.12 ms\xspace}
+        {7}{15.28 ms\xspace}
+        {15}{32.17 ms\xspace}
+        {31}{67.40 ms\xspace}
+        {63}{146.86 ms\xspace}
+        {127}{256.33 ms\xspace}
+        {255}{514.93 ms\xspace}
+        {511}{1.02 secs\xspace}
+        {1023}{2.07 secs\xspace}
+        {2047}{4.29 secs\xspace}
+        {4095}{8.28 secs\xspace}
+        {8191}{17.99 secs\xspace}
+        {16383}{32.50 secs\xspace}
+        {32767}{1.10 mins\xspace}
+        {65535}{2.21 mins\xspace}
+        {131071}{4.43 mins\xspace}
+        {262143}{8.88 mins\xspace}
+        {524287}{22.64 mins\xspace}
+        {1048575}{44.51 mins\xspace}
+        {2097151}{1.14 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgReconstrWcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{7.91 ms\xspace}
+        {7}{21.34 ms\xspace}
+        {15}{56.46 ms\xspace}
+        {31}{126.69 ms\xspace}
+        {63}{297.71 ms\xspace}
+        {127}{663.19 ms\xspace}
+        {255}{1.46 secs\xspace}
+        {511}{3.17 secs\xspace}
+        {1023}{6.84 secs\xspace}
+        {2047}{15.77 secs\xspace}
+        {4095}{34.42 secs\xspace}
+        {8191}{1.23 mins\xspace}
+        {16383}{2.57 mins\xspace}
+        {32767}{5.01 mins\xspace}
+        {65535}{10.47 mins\xspace}
+        {131071}{22.01 mins\xspace}
+        {262143}{47.28 mins\xspace}
+        {524287}{1.79 hrs\xspace}
+        {1048575}{3.51 hrs\xspace}
+        {2097151}{6.83 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\ejfDkgReconstrWcTimeImprovOveramt}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{1.1\texttimes\xspace}
+        {7}{1.4\texttimes\xspace}
+        {15}{1.76\texttimes\xspace}
+        {31}{1.88\texttimes\xspace}
+        {63}{2.03\texttimes\xspace}
+        {127}{2.59\texttimes\xspace}
+        {255}{2.83\texttimes\xspace}
+        {511}{3.11\texttimes\xspace}
+        {1023}{3.31\texttimes\xspace}
+        {2047}{3.67\texttimes\xspace}
+        {4095}{4.16\texttimes\xspace}
+        {8191}{4.09\texttimes\xspace}
+        {16383}{4.74\texttimes\xspace}
+        {32767}{4.54\texttimes\xspace}
+        {65535}{4.74\texttimes\xspace}
+        {131071}{4.97\texttimes\xspace}
+        {262143}{5.32\texttimes\xspace}
+        {524287}{4.75\texttimes\xspace}
+        {1048575}{4.73\texttimes\xspace}
+        {2097151}{6\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\ejfDkgReconstrWcTimeOutperformNamt}{7}
+
+
+%
+% Data for column 'end_to_end_bc_usec'
+% (improvements must be better than 1.2 and occur after n > 16)
+%
+\newcommand{\ejfDkgEndToEndBcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{6.81 ms\xspace}
+        {7}{12.44 ms\xspace}
+        {15}{24.18 ms\xspace}
+        {31}{59.22 ms\xspace}
+        {63}{169.17 ms\xspace}
+        {127}{526.54 ms\xspace}
+        {255}{1.73 secs\xspace}
+        {511}{5.96 secs\xspace}
+        {1023}{21.12 secs\xspace}
+        {2047}{1.27 mins\xspace}
+        {4095}{4.79 mins\xspace}
+        {8191}{17.60 mins\xspace}
+        {16383}{1.16 hrs\xspace}
+        {32767}{4.64 hrs\xspace}
+        {65535}{16.65 hrs\xspace}
+        {131071}{2.43 days\xspace}
+        {262143}{8.49 days\xspace}
+        {524287}{29.73 days\xspace}
+        {1048575}{104.04 days\xspace}
+        {2097151}{364.12 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgEndToEndBcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{6.74 ms\xspace}
+        {7}{12.20 ms\xspace}
+        {15}{29.85 ms\xspace}
+        {31}{56.77 ms\xspace}
+        {63}{106.92 ms\xspace}
+        {127}{173.97 ms\xspace}
+        {255}{352.29 ms\xspace}
+        {511}{724.24 ms\xspace}
+        {1023}{1.46 secs\xspace}
+        {2047}{3.00 secs\xspace}
+        {4095}{6.14 secs\xspace}
+        {8191}{12.55 secs\xspace}
+        {16383}{25.45 secs\xspace}
+        {32767}{56.18 secs\xspace}
+        {65535}{1.76 mins\xspace}
+        {131071}{3.65 mins\xspace}
+        {262143}{7.34 mins\xspace}
+        {524287}{14.79 mins\xspace}
+        {1048575}{29.85 mins\xspace}
+        {2097151}{1.02 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgEndToEndBcTimeImprovOverejf}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{1.01\texttimes\xspace}
+        {7}{1.02\texttimes\xspace}
+        {15}{0.81\texttimes\xspace}
+        {31}{1.04\texttimes\xspace}
+        {63}{1.6\texttimes\xspace}
+        {127}{3.03\texttimes\xspace}
+        {255}{4.92\texttimes\xspace}
+        {511}{8.22\texttimes\xspace}
+        {1023}{14.4\texttimes\xspace}
+        {2047}{25\texttimes\xspace}
+        {4095}{46\texttimes\xspace}
+        {8191}{84\texttimes\xspace}
+        {16383}{164\texttimes\xspace}
+        {32767}{297\texttimes\xspace}
+        {65535}{566\texttimes\xspace}
+        {131071}{958\texttimes\xspace}
+        {262143}{1667\texttimes\xspace}
+        {524287}{2894\texttimes\xspace}
+        {1048575}{5018\texttimes\xspace}
+        {2097151}{8607\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgEndToEndBcTimeOutperformNejf}{63}
+
+
+%
+% Data for column 'end_to_end_wc_usec'
+% (improvements must be better than 1.2 and occur after n > 16)
+%
+\newcommand{\ejfDkgEndToEndWcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{17.60 ms\xspace}
+        {7}{47.17 ms\xspace}
+        {15}{107.79 ms\xspace}
+        {31}{242.07 ms\xspace}
+        {63}{557.64 ms\xspace}
+        {127}{1.28 secs\xspace}
+        {255}{3.25 secs\xspace}
+        {511}{8.97 secs\xspace}
+        {1023}{27.20 secs\xspace}
+        {2047}{1.48 mins\xspace}
+        {4095}{5.19 mins\xspace}
+        {8191}{18.44 mins\xspace}
+        {16383}{1.19 hrs\xspace}
+        {32767}{4.69 hrs\xspace}
+        {65535}{16.76 hrs\xspace}
+        {131071}{2.44 days\xspace}
+        {262143}{8.51 days\xspace}
+        {524287}{29.77 days\xspace}
+        {1048575}{104.11 days\xspace}
+        {2097151}{364.26 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgEndToEndWcTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{18.36 ms\xspace}
+        {7}{64.50 ms\xspace}
+        {15}{179.90 ms\xspace}
+        {31}{418.50 ms\xspace}
+        {63}{954.64 ms\xspace}
+        {127}{1.93 secs\xspace}
+        {255}{4.27 secs\xspace}
+        {511}{9.24 secs\xspace}
+        {1023}{19.96 secs\xspace}
+        {2047}{44.04 secs\xspace}
+        {4095}{1.58 mins\xspace}
+        {8191}{3.37 mins\xspace}
+        {16383}{7.12 mins\xspace}
+        {32767}{16.07 mins\xspace}
+        {65535}{30.83 mins\xspace}
+        {131071}{1.08 hrs\xspace}
+        {262143}{2.29 hrs\xspace}
+        {524287}{4.93 hrs\xspace}
+        {1048575}{10.05 hrs\xspace}
+        {2097151}{20.45 hrs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgEndToEndWcTimeImprovOverejf}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{0.96\texttimes\xspace}
+        {7}{0.73\texttimes\xspace}
+        {15}{0.6\texttimes\xspace}
+        {31}{0.58\texttimes\xspace}
+        {63}{0.58\texttimes\xspace}
+        {127}{0.66\texttimes\xspace}
+        {255}{0.76\texttimes\xspace}
+        {511}{0.97\texttimes\xspace}
+        {1023}{1.3\texttimes\xspace}
+        {2047}{2.01\texttimes\xspace}
+        {4095}{3.28\texttimes\xspace}
+        {8191}{5.47\texttimes\xspace}
+        {16383}{10.01\texttimes\xspace}
+        {32767}{17.51\texttimes\xspace}
+        {65535}{32\texttimes\xspace}
+        {131071}{54.07\texttimes\xspace}
+        {262143}{89.33\texttimes\xspace}
+        {524287}{145.02\texttimes\xspace}
+        {1048575}{248.64\texttimes\xspace}
+        {2097151}{427\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\amtDkgEndToEndWcTimeOutperformNejf}{1023}
+
+

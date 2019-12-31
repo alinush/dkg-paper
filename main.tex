@@ -1,0 +1,60 @@
+\PassOptionsToPackage{hypertexnames=false}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\input{includes}
+\input{defs}
+\input{perf}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+        T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\hyphenation{mem-ber-ship}
+\hyphenation{a-sym-pto-tic}
+%\hyphenation{trans-pa-ren-cy}
+\hyphenation{non-mem-ber-ship}  % Use non\hyp{}membership in the text, or else it won't hyphenate.
+
+\begin{document}
+  %\date{}
+
+  \input{title}
+  \input{authors}
+  
+  \maketitle
+  
+  % As a general rule, do not put math, special symbols or citations
+  % in the abstract
+  \input{abstract}
+
+  \maketitle % ACM-specific: title must be "made" after abstract
+  \begin{IEEEkeywords}
+  polynomial commitments, polynomial multipoint evaluation, distributed key generation, verifiable secret sharing, threshold signatures, BLS
+  \end{IEEEkeywords}
+  
+  \input{intro}
+  \input{background}
+  \input{threshsig}
+  \input{amt}
+  \input{vss}
+  \input{dkg}
+  \input{implementation}
+  \input{discussion}
+  \input{conclusion}
+
+  \clearpage
+  %\nocite{*}
+  \bibliographystyle{IEEEtran}
+  \bibliography{references} 
+  
+  %\clearpage
+  \appendix
+  \input{complexity}
+  \input{proofs}
+  \input{polylog-dkg-configs}
+  
+  %\theendnotes
+  
+  % that's all folks
+\end{document}

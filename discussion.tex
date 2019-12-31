@@ -1,0 +1,68 @@
+\section{Discussion and Future Work}
+\label{s:discussion}
+
+\subsubsection{Generating public parameters}
+\label{s:trusted-setup}
+% Note: Using a DKG for the trusted setup could be problematic because of attacks on f+1 out of 2f+1 DKGs where f malicious players complain about f honest players, forcing them to reveal their secrets, resulting in just only one (albeit honest) player knowing the secret (and everybody else knowing that the honest player knows, and therefore possibly targetting him).
+Similar to \evss and \ejfdkg, our protocols require a \textit{trusted setup} to generate $\ell$-SDH public parameters.
+Fortunately, this setup needs to be done only once and can be securely implemented via MPC protocols~\cite{zcash-mpc1,zcash-mpc2}.
+In fact, currently deployed systems have already demonstrated the practicality of this approach.
+In 2018, approximately 200 participants used an MPC~\cite{zcash-mpc2} to generate new public parameters for the Sapling version of Zcash~\cite{zcash}.
+The MPC protocol allowed anyone to participate and only required one honest party, making it a very good candidate.
+
+\subsubsection{Sortitioned DKG}
+\label{s:sortitioned-dkg}
+To further reduce communication and computation, we propose a \textit{sortitioned DKG} where only a small, random \textit{committee} of $c < n$ players deal.
+The key question is where does the randomness to pick the committee come from?
+When a DKG runs many times, this randomness could come from previous DKG runs (e.g., DKGs for Schnorr TSS nonces).
+To bootstrap securely, the first DKG run would be with a full committee of size $c=n$.
+When a DKG runs only once, such as when distributing the secret key of a $(t,n)$ TSS, the $c$ players could be a decentralized cothority~\cite{cosi} different than the TSS signers.
+The cothority would run the DKG dealing round while the $n$ signers would run the DKG verification round (see \cref{alg:dkg}).
+The complaint round would be split: accused cothority members would compute the KZG batch proofs (see \cref{s:scalable-vss:batch-complaints}) while the $n$ signers would receive and verify those proofs.
+Importantly, our AMT technique would help cothority members deal much faster to the $n$ signers.
+We leave defining and proving the security of sortitioned DKGs to future work.
+
+\subsubsection{Arbitrary points}
+\label{s:amt:arbitrary-points}
+AMTs can be generalized to any set of points $\{x_i\}_{i\in[n]}$ (not just $x_i=\omega_N^{i-1}$) \textit{for which verifiers do not have the necessary accumulator commitments}.
+The accumulators $g^{a_{w}(\tau)}$ can be included as part of the proof \textit{but} along with (1) a subset proof w.r.t. the parent accumulator and (2) an ``extractable'' counterpart $g^{\alpha a_w(\tau)}$, where $\alpha$ is another trapdoor.
+% Note: Need to add: 
+% - 64 byte accumulator in G2 (so we can pair it with G1 quotient), 
+% - 32 bytes for extractable counterpart in G1 (so we can check it for equality against accumulator in G2 and g^\tau in G1)
+% - 32 bytes for the subset proof in G1 (so we can pair with child accumulator in G1).
+% So overhead goes from 32 bytes per node to 128 bytes per node.
+The asymptotic proof size remains the same but will increase in practice by 4x (with Type III pairings).
+Furthermore, this construction will need extra public parameters of the form $(g^{\alpha \tau^i})_{i\in[0,\ell]}$.
+On the other hand, proof verifiers now need $\Theta(1)$ rather than $\Theta(\log{n})$ public parameters (see \cref{s:amt:public-parameters,s:scalable-vss:public-params}).
+We leave proving this construction secure under $\ell$-PKE~\cite{groth10} to future work.
+
+\subsubsection{Information-theoretic hiding AMTs}
+\label{s:amt:information-theoretic-amts}
+We can devise an information-theoretic hiding version of our AMT proofs that is compatible with information-theoretic hiding KZG commitments~\cite{polycommit}.
+This version of AMTs can be used to speed up the unbiasable \newdkg protocol~\cite{dkg}. 
+%, although other ways of getting unbiasability exist~\cite{NBB16}.
+% Our evaluation focused on the biasable protocols since we would have observed an improvement of roughly the same magnitude in the unbiasable protocols too.
+% Also for simplicity of presentation, since the PK $\sum_i g^{z_i}$ can be extracted in a simple way.
+Let $h=g^{\kappa}$ be another generator of $\Group$ such that nobody knows the discrete log $\kappa=\log_g(h)$.
+Assume that, in addition to $\mathsf{PP}_q(g; \tau)$, we also have public parameters $\mathsf{PP}_\ell(h;\tau)$.
+An information-theoretic hiding KZG commitment to $\phi$ of degree $d$ is $c = g^{\phi(\tau)} h^{r(\tau)} = g^{\phi(\tau)+\kappa r(\tau)}$ where $r$ is a random, degree $d$ polynomial~\cite{polycommit}.
+Note that $c$ is just a commitment to the polynomial $\psi(x) = \phi(x) + \kappa r(x)$.
+As a consequence, all we have to do is build an AMT for $\psi$.
+For this, we compute an AMT for $\phi$ with public parameters $\PP_\ell(g;\tau)$ and one for $r$ but with parameters $\PP_\ell(h;\tau)$.
+By homomorphically combining these two AMTs we get exactly the AMT for $\psi$ (see \cref{s:scalable-dkg:homomorphic-amt}).
+We leave proving this construction is information-theoretic hiding to future work.
+% Note that the 'hiding' definition from the KZG paper gives the adversary the commitment and a bunch of evaluation proofs, so as to account for the fact that proofs might reveal the polynomial.
+
+\subsubsection{Vector commitments (VCs)}
+AMTs naturally give rise to a VC scheme with logarithmic-sized proofs~\cite{vc}.
+Similar to the multivariate polynomial-based VC from~\cite{edrax}, this scheme would also support efficiently updating proofs and updating VC digests after vector updates.
+Thus, our VC could also be used for building stateless cryptocurrencies~\cite{edrax,BBF19}.
+Our VC can be extended with zero-knowledge-like properties using the information-theoretic variant of AMTs (see \cref{s:amt:information-theoretic-amts}).
+
+\subsubsection{Batch AMT verification}
+\label{s:amt:batch-verification}
+The efficient reconstruction techniques from \cref{s:scalable-vss:reconstruction} reduced the number of pairings when verifying an AMT, but still required $\Theta(t + (n-t)\log{t})$ pairings in the worst case.
+At the of cost doubling the prover time and proof size, this can be reduced to $\approx 2n-1$ pairings, independent of how many proofs are valid.
+The key idea is to also include commitments to the \textit{remainder polynomials} from the multipoint evaluation tree in the AMT (see \cref{f:multipoint-eval}).
+This way, an entire AMT tree can be verified node-by-node, top-to-bottom by checking that the division at each node is correct.
+We leave proving this approach secure to future work.

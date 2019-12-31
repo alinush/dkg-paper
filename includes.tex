@@ -1,0 +1,65 @@
+%
+% WARNING: For sanity, keep these alphabetically sorted
+% BUT... see unsorted list at the end too.
+%
+%\usepackage{adjustbox}     % for centering huge tables using \begin{adjustbox}{center}
+\usepackage{algorithm}      % for describing algorithms nicely
+%\usepackage{algorithmic}   % \begin{algorithmic}
+\usepackage[noend]{algpseudocode}
+%\usepackage{amscd}
+%\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}         % \newtheorem (conflicts with llncs template due to \proof)
+%\usepackage{bm}            % for \bm to bold matrix notation in math mode
+\usepackage{booktabs}       % for table spacing, \midrule
+%\usepackage{breqn}         % breaks inline math equations automatically, but never seems to work (LaTeX errors when imported)
+\usepackage{calculator}
+%\usepackage{caption}       % for captioning \tabular-only (no \table) tables using \captionof{table}{Your caption here}
+\usepackage{cite}
+%\usepackage{csquotes}      % for block quotes using \displayquote
+%\usepackage{dirtytalk}     % for block quotes using \say
+\usepackage{endnotes}
+\usepackage{enumitem}
+\usepackage{epsfig}
+%\usepackage{float}         % for the H placement option on \begin{table}[H]
+\usepackage{forest}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}       % Use [draft] to fix "\pdfendlink ended up in different nesting level than \pdfstartlink" error
+\usepackage{hyphenat}       % \hyphenation{} and \hyp{}
+\usepackage[utf8]{inputenc}
+\usepackage{makecell}       % use \makecell{text\\ new line} to break up lines inside table cells
+%\usepackage{marvosym}      % needed for cross \Cross symbol
+\usepackage{mathtools}      % for \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+%\usepackage[misc]{ifsym}   % for \Letter to mark corresponding author
+%\usepackage{multirow}
+%\usepackage{pifont}        % need for defining \xmark (opposite of a checkmark)
+\usepackage{rotating}       % need to \rotate table headers
+\usepackage{textcomp}       % \texttildelow for ~
+%\usepackage{url}
+%\usepackage{wasysym}       % \CIRCLE, \LEFTcircle and \RIGHTcircle
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{xstring}
+
+%
+% WARN: These must be out of order for some reason
+%
+\usepackage[noabbrev,capitalize]{cleveref}            % WARN: Must be included after hyperref
+\usepackage[caption=false, font=footnotesize]{subfig} % WARN: When moved up in the sorted list, getting "TeX capacity exceeded, sorry [input stack size=5000]" error
+
+% WARN: Unfortunately, \crefname leaves a space between the section symbol and the number, which is not customary.
+%\crefname{part}{\S}{\S\S}
+%\crefname{chapter}{\S}{\S\S}
+%\crefname{section}{\S}{\S\S}
+%\crefname{subsection}{\S}{\S\S}
+%\crefname{subsubsection}{\S}{\S\S}
+
+\crefformat{chapter}{\S#2#1#3}
+\crefmultiformat{chapter}{\S\S#2#1#3}{ and~#2#1#3}{, #2#1#3}{, and~#2#1#3}
+\crefformat{section}{\S#2#1#3}
+\crefmultiformat{section}{\S\S#2#1#3}{ and~#2#1#3}{, #2#1#3}{, and~#2#1#3}
+\crefformat{subsection}{\S#2#1#3}
+\crefmultiformat{subsection}{\S\S#2#1#3}{ and~#2#1#3}{, #2#1#3}{, and~#2#1#3}
+\crefformat{subsubsection}{\S#2#1#3}
+\crefmultiformat{subsubsection}{\S\S#2#1#3}{ and~#2#1#3}{, #2#1#3}{, and~#2#1#3}

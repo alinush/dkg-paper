@@ -1,0 +1,139 @@
+\newcommand{\blsNaiveTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{314 mus\xspace}
+        {7}{665 mus\xspace}
+        {15}{764 mus\xspace}
+        {31}{1.35 ms\xspace}
+        {63}{2.35 ms\xspace}
+        {127}{4.29 ms\xspace}
+        {255}{8.59 ms\xspace}
+        {511}{19.27 ms\xspace}
+        {1023}{50.83 ms\xspace}
+        {2047}{155.62 ms\xspace}
+        {4095}{636.6 ms\xspace}
+        {8191}{2.06 secs\xspace}
+        {16383}{7.58 secs\xspace}
+        {32767}{29.74 secs\xspace}
+        {65535}{2 mins\xspace}
+        {131071}{8.05 mins\xspace}
+        {262143}{33.23 mins\xspace}
+        {524287}{2.1 hrs\xspace}
+        {1048575}{8.65 hrs\xspace}
+        {2097151}{1.59 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\naiveLagrTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{11 mus\xspace}
+        {7}{16 mus\xspace}
+        {15}{33 mus\xspace}
+        {31}{77 mus\xspace}
+        {63}{212 mus\xspace}
+        {127}{642 mus\xspace}
+        {255}{2.18 ms\xspace}
+        {511}{7.97 ms\xspace}
+        {1023}{30.56 ms\xspace}
+        {2047}{118.72 ms\xspace}
+        {4095}{558.17 ms\xspace}
+        {8191}{1.93 secs\xspace}
+        {16383}{7.35 secs\xspace}
+        {32767}{29.29 secs\xspace}
+        {65535}{1.99 mins\xspace}
+        {131071}{8.02 mins\xspace}
+        {262143}{33.18 mins\xspace}
+        {524287}{2.09 hrs\xspace}
+        {1048575}{8.64 hrs\xspace}
+        {2097151}{1.59 days\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\multiexpTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{303 mus\xspace}
+        {7}{649 mus\xspace}
+        {15}{731 mus\xspace}
+        {31}{1.28 ms\xspace}
+        {63}{2.14 ms\xspace}
+        {127}{3.65 ms\xspace}
+        {255}{6.41 ms\xspace}
+        {511}{11.31 ms\xspace}
+        {1023}{20.27 ms\xspace}
+        {2047}{36.90 ms\xspace}
+        {4095}{78.43 ms\xspace}
+        {8191}{129.12 ms\xspace}
+        {16383}{235.7 ms\xspace}
+        {32767}{449.91 ms\xspace}
+        {65535}{871.96 ms\xspace}
+        {131071}{1.63 secs\xspace}
+        {262143}{3.13 secs\xspace}
+        {524287}{5.98 secs\xspace}
+        {1048575}{11.41 secs\xspace}
+        {2097151}{22.12 secs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\blsEffTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{321 mus\xspace}
+        {7}{685 mus\xspace}
+        {15}{782 mus\xspace}
+        {31}{1.4 ms\xspace}
+        {63}{2.46 ms\xspace}
+        {127}{4.26 ms\xspace}
+        {255}{7.64 ms\xspace}
+        {511}{14.31 ms\xspace}
+        {1023}{26.92 ms\xspace}
+        {2047}{50.74 ms\xspace}
+        {4095}{96.17 ms\xspace}
+        {8191}{186.55 ms\xspace}
+        {16383}{365 ms\xspace}
+        {32767}{719.65 ms\xspace}
+        {65535}{1.46 secs\xspace}
+        {131071}{2.87 secs\xspace}
+        {262143}{5.72 secs\xspace}
+        {524287}{11.4 secs\xspace}
+        {1048575}{24.16 secs\xspace}
+        {2097151}{46.26 secs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\fastLagrTime}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{23 mus\xspace}
+        {7}{40 mus\xspace}
+        {15}{75 mus\xspace}
+        {31}{156 mus\xspace}
+        {63}{358 mus\xspace}
+        {127}{649 mus\xspace}
+        {255}{1.36 ms\xspace}
+        {511}{2.94 ms\xspace}
+        {1023}{6.32 ms\xspace}
+        {2047}{13.47 ms\xspace}
+        {4095}{28.23 ms\xspace}
+        {8191}{60.54 ms\xspace}
+        {16383}{128.44 ms\xspace}
+        {32767}{271.99 ms\xspace}
+        {65535}{577.35 ms\xspace}
+        {131071}{1.23 secs\xspace}
+        {262143}{2.61 secs\xspace}
+        {524287}{5.49 secs\xspace}
+        {1048575}{12.49 secs\xspace}
+        {2097151}{25 secs\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\blsTimeImprov}[1]{%
+    \IfStrEqCase{#1}{
+        {3}{0.98\texttimes\xspace}
+        {7}{0.97\texttimes\xspace}
+        {15}{0.98\texttimes\xspace}
+        {31}{0.97\texttimes\xspace}
+        {63}{0.96\texttimes\xspace}
+        {127}{1.01\texttimes\xspace}
+        {255}{1.13\texttimes\xspace}
+        {511}{1.35\texttimes\xspace}
+        {1023}{1.89\texttimes\xspace}
+        {2047}{3\texttimes\xspace}
+        {4095}{6.6\texttimes\xspace}
+        {8191}{11\texttimes\xspace}
+        {16383}{20.7\texttimes\xspace}
+        {32767}{41\texttimes\xspace}
+        {65535}{82\texttimes\xspace}
+        {131071}{168\texttimes\xspace}
+        {262143}{348\texttimes\xspace}
+        {524287}{661\texttimes\xspace}
+        {1048575}{1288\texttimes\xspace}
+        {2097151}{2964\texttimes\xspace}}[\textcolor{red}{\textbf{NODATA}}]}
+
+\newcommand{\blsOutperformN}{511}
