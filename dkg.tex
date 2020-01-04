@@ -21,15 +21,15 @@ The key observation is that ``adding up'' the multipoint evaluation trees of two
 %(The evaluations have to be at the same set of points, say, $\{1,2,\dots,n\}$.)
 In more detail, let $q_{w, [\psi]}$ denote the quotient polynomial at node $w$ in $\psi$'s multipoint evaluation tree (at $X$).
 Then, one can show that $q_{w,[\phi+\rho]} = q_{w,[\phi]} + q_{w,[\rho]}$ and that $g^{q_{w,[\phi+\rho]}(\tau)} = g^{q_{w,[\phi]}(\tau) + q_{w,[\rho]}(\tau)} = g^{q_{w,[\phi]}(\tau)} g^{q_{w,[\rho]}(\tau)}$.
-In other words, given an AMT for $\phi$ and an AMT for $\rho$, we can obtain an AMT for $\phi+\rho$ by combining quotient commitments at each node via multiplication.
-It follows that a proof for $f_1(a)$ and one for $f_2(a)$ can be aggregated into a proof for $(f_1+f_2)(a)$ by combining commitments at each node.
+In other words, given an AMT for $\phi$ and an AMT for $\rho$, we can obtain an AMT for $\phi+\rho$ by multiplying quotient commitments at each node.
+It follows that a proof for $f_1(a)$ and one for $f_2(a)$ can be aggregated into a proof for $(f_1+f_2)(a)$ by multiplying commitments at each node.
 %Next, we use this homomorphism to speed up the verification round.
 
 \subsubsection{Fast-track verification round}
 \label{s:scalable-dkg:share-verif}
 During the verification round, each player $j$ must receive and verify shares from all players $i\in[n]$, including himself (see \cref{alg:dkg}).
 % $n$ shares with evaluation proofs and $n$ $g^{f_i(0)}$'s with evaluation proofs and NIZKPoKs from all other players (including from $j$ himself).
-Specifically, each player $i$ gives $j$: (I) a KZG commitment $c_i$ of $i$'s polynomial $f_i$, (II) a share $s_{i,j}=f_i(\omega_N^{j-1})$ with an AMT proof $\pi_{i,j}$ and (III) $g^{f_i(0)}$ with a NIZKPoK and KZG proof.
+Specifically, each player $i$ gives $j$: (1) a KZG commitment $c_i$ of $i$'s polynomial $f_i$, (2) a share $s_{i,j}=f_i(\omega_N^{j-1})$ with an AMT proof $\pi_{i,j}$ and (3) $g^{f_i(0)}$ with a NIZKPoK and KZG proof.
 Next, player $j$ must verify each $s_{i,j}$ and $g^{f_i(0)}$ against their $c_i$.
 With \textit{naive verification}, this takes $\Theta(n\log{t})$ pairings for all $s_{i,j}$'s (since $\pi_{i,j}$'s are AMT proofs), and $\Theta(n)$ pairings for the $g^{f_i(0)}$'s.
 We show how \textit{batch verification} can do this faster, with anywhere from $\Theta(\log{t})$ to $\Theta(n\log{t})$ pairings, depending on the number of valid shares.

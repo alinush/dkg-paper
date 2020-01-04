@@ -62,7 +62,7 @@ Our VC can be extended with zero-knowledge-like properties using the information
 \subsubsection{Batch AMT verification}
 \label{s:amt:batch-verification}
 The efficient reconstruction techniques from \cref{s:scalable-vss:reconstruction} reduced the number of pairings when verifying an AMT, but still required $\Theta(t + (n-t)\log{t})$ pairings in the worst case.
-At the of cost doubling the prover time and proof size, this can be reduced to $\approx 2n-1$ pairings, independent of how many proofs are valid.
+At the cost of doubling the prover time and proof size, this can be reduced to $\approx 2n-1$ pairings, independent of how many proofs are valid.
 The key idea is to also include commitments to the \textit{remainder polynomials} from the multipoint evaluation tree in the AMT (see \cref{f:multipoint-eval}).
 This way, an entire AMT tree can be verified node-by-node, top-to-bottom by checking that the division at each node is correct.
 We leave proving this approach secure to future work.

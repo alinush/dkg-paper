@@ -176,10 +176,10 @@ Gennaro et al.~\cite{dkg} noticed that if players in Pedersen's DKG refuse to de
 They also showed that secrets produced by Pedersen's DKG can be \textit{biased}, and fixed this in their \newdkg protocol.
 % Note: Gennaro's unbiasable New-DKG with Pedersen commitments can be made more efificient (one less round, I think) by changing the reconstruction of $y=g^z_i$ to use proofs-of-knowledge~\cite{Canetti1999Adaptive}.
 % But, NBB16 is even better I think.
-Neji et al. give a more efficient way of debiasing Pedersen's DKG~\cite{NBB16}.
+Neji et al. gave a more efficient way of debiasing Pedersen's DKG~\cite{NBB16}.
 Gennaro et al. also introduced the first ``fast-track'' or optimistic DKG~\cite{GRR98p}.
 Canetti et al. modified \newdkg into an adaptively-secure DKG~\cite{Canetti1999Adaptive}.
-So far, all DKGs required an $\Theta(t)$-sized broadcast by each player.
+So far, all DKGs required a $\Theta(t)$-sized broadcast by each player.
 % Note: In the worst case, \ejfdkg requires $\Theta(f^2)$ pairings to verify $\Theta(f^2)$ complaints.
 % Even worse, JF-DKG would require $\Theta(f^2 \times t)$ time.
 
@@ -201,7 +201,7 @@ We have not investigated if our techniques apply there.
 \subsubsection{Polylogarithmic DKG}
 Canny and Sorkin present a polylogarithmic time DKG~\cite{dkg-polylog}, a beautiful result that unfortunately has limitations.
 In certain settings, their protocol only requires $\Theta(\log^3{n})$ computation and communication per player.
-The key idea is that each player only talks to a \textit{group} of $\log{n}$ other players, leading to an $\Theta(\log^3{n})$ per-player complexity.
+The key idea is that each player only talks to a \textit{group} of $\log{n}$ other players, leading to a $\Theta(\log^3{n})$ per-player complexity.
 Unfortunately, their protocol centralizes trust in a dealer who must ``permute'' the players before the protocol starts.
 The authors argue the dealer can be distributed amongst the players, but it is unclear how to do so securely while maintaining the $\Theta(\log^3{n})$ per player complexity.
 

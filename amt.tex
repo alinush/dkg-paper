@@ -80,7 +80,8 @@ Let $n=8$ and $\omega_8$ denote a primitive 8th root of unity.
 Previously, in \cref{f:multipoint-eval}, the evaluation points $\{1,2,\dots,8\}$ were ordered as $\langle (x-1), (x-2),\dots, (x-8)\rangle$ monomials in the leaves.
 Then, the accumulators were computed by multiplying ``up the tree,'' culminating in the root accumulator $\prod_{i\in[8]}(x-i)$.
 In our case, the evaluation points are $\{\omega_8^{i-1}\}_{i\in[8]}$ but we reorder them using a bit-reversal permutation~\cite{bitreversal-wiki} as $\langle(x-\omega_8^0), (x-\omega_8^4), (x-\omega_8^2), (x-\omega_8^6), (x-\omega_8^1), (x-\omega_8^5), (x-\omega_8^3), (x-\omega_8^7)\rangle$.
-This ordering ensures that, as we multiply ``up the tree,'' all accumulators are of $(x^{2^k} + \omega_8^j)$ form for some $j$.
+This ordering ensures that, as we multiply ``up the tree,'' all accumulators are of the form $(x^{2^k} + \omega_8^j)$ for some $j$.
+
 Let us see exactly how this happens.
 The parent accumulator of the first two leaves $(x-\omega_8^0)$ and $(x-\omega_8^4)$ is their product $(x-\omega_8^0)(x-\omega_8^4) = x^2 - \omega_8^4 x - \omega_8^0 x + \omega_8^0 \omega_8^4$.
 Since $\omega_n^i \omega_n^j = \omega_n^{(i+j) \bmod n}$~\cite{CLRS09}, this equals $x^2 - x(\omega_8^4 + \omega_8^0) + \omega_8^4$.

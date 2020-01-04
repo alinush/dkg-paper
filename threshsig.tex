@@ -8,7 +8,7 @@ Last, we use AMTs to speed up and scale Kate et al.'s \evss and Kate's \ejfdkg (
 In this section, we show how to reduce the time to aggregate a $(t,n)$ BLS threshold signature from $\Theta(t^2)$ to $\Theta(t\log^2{t})$.
 Although we focus on BLS, our techniques can be used in any threshold cryptosystem (not just signatures) whose secret key lies in a prime-order field $\Fp$.
 % Note: Must \Fp have roots of unity? No, can use other multiplication / division algorithms, but in practice, roots of unity are preferred.
-This includes ElGamal signatures~\cite{Harn1994GroupOriented,Park96NewElGamal,Gennaro1996Robust}, ElGamal encryption~\cite{DesmedtFrankel1990Threshold}, Schnorr signatures~\cite{threshold-schnorr,Gennaro2003SecureApplications} (but not RSA-based schemes, whose secret key does not lie in a prime-order field~\cite{Shoup2000Practical}).
+This includes ElGamal signatures~\cite{Harn1994GroupOriented,Park96NewElGamal,Gennaro1996Robust}, ElGamal encryption~\cite{DesmedtFrankel1990Threshold} and Schnorr signatures~\cite{threshold-schnorr,Gennaro2003SecureApplications} (but not RSA-based schemes, whose secret key does not lie in a prime-order field~\cite{Shoup2000Practical}).
 
 Recall from \cref{s:prelim:threshsig} that BLS TSS aggregation has two phases: (1) computing Lagrange coefficients and (2) exponentiating signature shares by these coefficients.
 Unfortunately, as $t$ gets large, naively computing Lagrange coefficients in $\Theta(t^2)$ time dominates exponentiating the shares (see \cref{f:thresh}).
@@ -34,7 +34,7 @@ Second, we can compute all $N_i(0) = N(0) / (-i)$ in $\Theta(t)$ time.
 (Note that $N(0)$ is just the first coefficient of $N(x)$.)
 However, computing $D_i,\forall i\in T$ appears to require $\Theta(t^2)$ time.
 Fortunately, the \textit{derivative} $N'(x)$ of $N(x)$ evaluated at $i$ is exactly equal to $D_i$~\cite{moderncomputeralgebra-ch10}.
-Thus, an $\Theta(t\log^2{t})$ multipoint evaluation of $N'(x)$ at all $i\in T$ can efficiently compute all $D_i$'s!
+Thus, a $\Theta(t\log^2{t})$ multipoint evaluation of $N'(x)$ at all $i\in T$ can efficiently compute all $D_i$'s!
 
 To see why $N'(i) = D_i$, it is useful to look at the closed form formula for $N'(x)$ obtained by applying the product rule of differentiation (i.e., $(fg)' = f'g + fg'$).
 For example, for $N(x) = (x-1)(x-2)(x-3)$:
