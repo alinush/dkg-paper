@@ -117,7 +117,7 @@ As a result, \AdvB breaks discrete log on $(g,g^a)$.
 \parhead{Evaluation binding proof.}
 Suppose there exists an adversary \Adv that outputs a commitment $c$, with two contradicting proofs $\pi, \pi'$ attesting that $\phi(k)$ is equal to $v$ and $v'$, respectively.
 We show how to build another adversary \AdvB that breaks $q$-SBDH.
-First, \AdvB runs \Adv to get $(c, \pi, \pi', \phi(k), v, v')$.
+First, \AdvB runs \Adv to get $(c, \pi, \pi', k, v, v')$.
 Let $W=\treepath(k)$ denote the nodes along $k$'s path in the AMT.
 Let $(\pi_i)_{i\in W}$ denote the quotient commitments in $\pi$.
 Similarly, let $(\pi'_i)_{i\in W}$ denote the quotient commitments in $\pi'$.
