@@ -131,7 +131,7 @@ We leave scaling this to future work.
 \subsubsection{Threshold signature schemes (TSS)}
 \label{s:related-work:tss}
 Threshold signatures and threshold encryption were first conceptualized by Desmedt~\cite{Desmedt1987Society}.
-Since then, many threshold signatures based on \textit{Shamir secret sharing} (see \cref{s:prelim:shamir-secret-sharing}) have been proposed ~\cite{DesmedtFrankel1992SharedGeneration,Shoup2000Practical,Harn1994GroupOriented,,Park96NewElGamal,Gennaro1996Robust,threshold-schnorr,Boldyreva2003Threshold,GennaroGoldfederNarayanan2016ThresholdOptimal}.
+Since then, many threshold signatures based on \textit{Shamir secret sharing} (see \cref{s:prelim:shamir-secret-sharing}) have been proposed ~\cite{DesmedtFrankel1992SharedGeneration,Shoup2000Practical,Harn1994GroupOriented,Park96NewElGamal,Gennaro1996Robust,threshold-schnorr,Boldyreva2003Threshold,GennaroGoldfederNarayanan2016ThresholdOptimal}.
 To the best of our knowledge, none of these schemes addressed the $\Theta(t^2)$ time required for polynomial interpolation.
 Furthermore, all current BLS TSS~\cite{Boldyreva2003Threshold} implementations seem to use this quadratic algorithm~\cite{bls-chia-impl,sbft,bls-dfinity-impl,bls-herumi-impl} and thus do not scale to large $t$.
 In contrast, our work uses $\Theta(t\log^2{t})$ fast Lagrange interpolation and scales to $t = 2^{20}$ (see \cref{s:threshsig}).
